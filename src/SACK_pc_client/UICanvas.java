@@ -16,11 +16,24 @@ public class UICanvas extends Canvas {
 
     public static final Font font = new Font("Fira Sans Thin", Font.PLAIN, 35);
 
-    private static Menu menu=new Menu(new String[]{"Расписание", "Чарт", "Настройки", "Выход"},
-            () -> {
+    private static Chart chart=new Chart();
+
+    private static WeekDaysPanel weekDaysPanel=new WeekDaysPanel(integer -> {
+
+
+
+    });
+
+    private static Menu menu=new Menu(new String[]{"Чарт", "Расписание", "Настройки", "Выход"},
+            (i) -> {
+                switch (i) {
+                    case 0: weekDaysPanel.setState(WeekDaysPanel.State.nonSelectable); break;
+                    case 1: weekDaysPanel.setState(WeekDaysPanel.State.selectable); break;
+                    case 2: weekDaysPanel.setState(WeekDaysPanel.State.hidden); break;
+                    case 3: weekDaysPanel.setState(WeekDaysPanel.State.hidden); break;
+                }
 
             });
-    private static WeekDaysPanel weekDaysPanel=new WeekDaysPanel();
 
     public UICanvas() {
         super();
@@ -69,6 +82,7 @@ public class UICanvas extends Canvas {
     private void update() {
         menu.update();
         weekDaysPanel.update();
+        chart.update();
     }
 
     private BufferStrategy bs;
@@ -90,8 +104,9 @@ public class UICanvas extends Canvas {
         g2.setColor(lightBackgroundColor);
         g2.fillRect(0, 0, getWidth(), getHeight());
 
+        chart.draw(g2);
+        weekDaysPanel.draw(g2);
         menu.draw(g2, getWidth(), getHeight());
-        weekDaysPanel.draw(g2, getWidth(), getHeight());
 
 
         g2.dispose();

@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.function.Consumer;
 
 public class Menu {
 
@@ -15,11 +16,11 @@ public class Menu {
         return selectedMenuItem;
     }
 
-    private int selectedMenuItem = 3;
+    private int selectedMenuItem = 0;
     private int lastSelectedMenuItem = 0;
     private boolean fullySelected = true;
 
-    private Runnable newItemSelected;
+    private Consumer<Integer> newItemSelected;
 
     private BufferedImage triangle;
 
@@ -28,7 +29,7 @@ public class Menu {
 
     private static final float hideAndAppearTime=0.3f;
 
-    public Menu(String[] items, Runnable newItemSelected) {
+    public Menu(String[] items, Consumer<Integer> newItemSelected) {
         try {
             triangle = ImageIO.read(new File("/home/nameless/IdeaProjects/SoundTest/src/SACK_pc_client/DarkArrow.png"));
         } catch (IOException e) {
@@ -60,7 +61,7 @@ public class Menu {
             fullySelected = false;
             inMotion.launch();
             outMotion.launch();
-            newItemSelected.run();
+            newItemSelected.accept(index);
         }
     }
 

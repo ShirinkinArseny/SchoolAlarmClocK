@@ -7,7 +7,6 @@ public class ParabolicTimeFunction {
     private float from;
     private float to;
     private float time;
-    private float timePow2;
 
     private long startTime;
 
@@ -16,7 +15,13 @@ public class ParabolicTimeFunction {
         this.to=to;
         this.time=time;
 
-        timePow2=time*time;
+        scale=to-from;
+    }
+
+    public void reconstruct(float time, float from, float to) {
+        this.from=from;
+        this.to=to;
+        this.time=time;
 
         scale=to-from;
     }
