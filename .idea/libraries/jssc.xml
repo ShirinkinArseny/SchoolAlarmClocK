@@ -1,7 +1,7 @@
 <component name="libraryTable">
   <library name="jssc">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/src/SACK_server_pc_part/jssc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/src/PC_part/ComPort/jssc.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

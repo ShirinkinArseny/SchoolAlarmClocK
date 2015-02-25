@@ -37,7 +37,7 @@ long lastTimeSec=0;     //прошлое время от начала дня в 
 long currentTimeSec=0;  //текущее время от начала дня в секундах
 
 void initRingKeeper(byte ringPin) {
-  Serial.begin(115200);
+  Serial.begin(9600);
   ringVoltagePin=ringPin;
   pinMode(ringVoltagePin, OUTPUT);
   initConnection(13, 12);
@@ -106,17 +106,20 @@ void updateSerial() {
                 Количество звонков в первый день
                 Первый звонок первого дня
                 ..
-                Последний звоноко первого дня
+                Последний звонок первого дня
                 Количество звонков во второй день
                 Первый звонок второго дня
                 ..
-                Последний звоноко второго дня
+                Последний звонок второго дня
                 ..
-                Последний звоноко последнего дня
+                Последний звонок последнего дня
 
             Преобразуем звонки в их представление в ПЗУ
 
         */
+
+
+                 byte cyc;//for sync
 
             clearWeekRings();
 
@@ -128,10 +131,20 @@ void updateSerial() {
             for (byte day=0; day<7; day++) {
 
                 int size=Serial.read();
-                 Serial.print(" got ");
-                 Serial.print(size);
+                 //Serial.print(" got ");
+                 //Serial.print(size);
+
+                cyc=0;
+                 while (size<0 && cyc<10) {
+                    size=Serial.read();
+                    cyc++;
+                    delay(10);
+                 }
+
                     if (size<0) {
                              Serial.println("E0");
+                             Serial.print(":");
+                             Serial.println(day);
                              loadWeekRings();
                              return;
                     }
@@ -141,8 +154,16 @@ void updateSerial() {
 
 
                     int b1=Serial.read();
-                 Serial.print(" got ");
-                 Serial.print(b1);
+
+                    cyc=0;
+                    while (b1<0 && cyc<10) {
+                       b1=Serial.read();
+                       cyc++;
+                       delay(10);
+                    }
+
+                 //Serial.print(" got ");
+                 //Serial.print(b1);
 
                     if (b1<0) {
                              Serial.print("E1:");
@@ -153,8 +174,16 @@ void updateSerial() {
                              return;
                     }
                     int b2=Serial.read();
-                 Serial.print(" got ");
-                 Serial.print(b2);
+
+                    cyc=0;
+                    while (b2<0 && cyc<10) {
+                       b2=Serial.read();
+                       cyc++;
+                       delay(10);
+                    }
+
+                // Serial.print(" got ");
+                 //Serial.print(b2);
                     if (b2<0) {
                              Serial.print("E2:");
                              Serial.print(ring);
@@ -201,6 +230,7 @@ void updateSerial() {
             }
 
             loadWeekRings();
+            Serial.print('R');
             Serial.println(done);
     } else
     if (readed=='4') { //get free memory
@@ -238,6 +268,7 @@ void updateSerial() {
             month,
             year1*256+year2);
 
+            Serial.print('T');
             Serial.println(done);
 
             currentTimeSec=getCurrentTime();
