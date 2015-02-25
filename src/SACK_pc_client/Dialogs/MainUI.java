@@ -1,11 +1,13 @@
-package SACK_pc_client;
+package SACK_pc_client.Dialogs;
+
+import SACK_pc_client.UICanvas;
 
 import javax.swing.*;
 
-public class Test extends JFrame {
+public class MainUI extends JFrame {
     private JPanel contentPane;
 
-    public Test() {
+    public MainUI() {
         setContentPane(contentPane);
 
         UICanvas uic=new UICanvas();
@@ -13,13 +15,13 @@ public class Test extends JFrame {
         contentPane.add(uic);
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setSize(800, 600);
+        setSize(1100, 700);
         setVisible(true);
 
         uic.start();
     }
 
     public static void main(String[] args) {
-        new Test();
+        new MainUI();
     }
 }

@@ -4,6 +4,16 @@ public class Ring {
 
     private int time;
 
+    public Ring(int value) {
+        this.time=value;
+        this.time/=10;
+        this.time*=10;
+    }
+
+    public int getSeconds() {
+        return time;
+    }
+
     public Ring(String time) throws IllegalTimeFormatException {
         String[] parts=time.split("[: .,/]");
         if (parts.length!=3) {
@@ -13,21 +23,21 @@ public class Ring {
         try {
             this.time=3600*Integer.parseInt(parts[0]);
         } catch (NumberFormatException e) {
-            throw new IllegalTimeFormatException("Can't parse firs arg: "+parts[0]);
+            throw new IllegalTimeFormatException("Can't parse first arg: "+parts[0]);
         }
 
 
         try {
             this.time+=60*Integer.parseInt(parts[1]);
         } catch (NumberFormatException e) {
-            throw new IllegalTimeFormatException("Can't parse firs arg: "+parts[0]);
+            throw new IllegalTimeFormatException("Can't parse second arg: "+parts[1]);
         }
 
 
         try {
             this.time+=Integer.parseInt(parts[2]);
         } catch (NumberFormatException e) {
-            throw new IllegalTimeFormatException("Can't parse firs arg: "+parts[0]);
+            throw new IllegalTimeFormatException("Can't parse third arg: "+parts[2]);
         }
 
         this.time/=10;
@@ -45,6 +55,10 @@ public class Ring {
         if (m.length()==1) m="0"+m;
         if (s.length()==1) s="0"+s;
         return h+":"+m+":"+s;
+    }
+
+    public String toString() {
+        return getHumanTime();
     }
 
 }

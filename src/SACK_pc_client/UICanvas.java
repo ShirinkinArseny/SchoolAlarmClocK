@@ -1,5 +1,7 @@
 package SACK_pc_client;
 
+import SACK_pc_client.Controls.*;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -8,6 +10,9 @@ import java.awt.image.BufferStrategy;
 
 public class UICanvas extends Canvas {
 
+    public static final int windowWidth=1100;
+    public static final int windowHeight=700;
+
     public static final Color lightBackgroundColor = new Color(0xe6e6e6);
     public static final Color lightForegroundColor = new Color(0x55d85e);
     public static final Color darkForegroundColor = new Color(0x1e8224);
@@ -15,22 +20,32 @@ public class UICanvas extends Canvas {
     public static final Color darkFontColor = new Color(0x000000);
 
     public static final Font font = new Font("Fira Sans Thin", Font.PLAIN, 35);
+    public static final Font fontSmall = new Font("Fira Sans Thin", Font.PLAIN, 20);
 
-    private static Chart chart=new Chart();
+    private static ActivityManager activityManager=new ActivityManager();
 
-    private static WeekDaysPanel weekDaysPanel=new WeekDaysPanel(integer -> {
-
-
-
+    private static WeekDaysPanel weekDaysPanel=new WeekDaysPanel(date -> {
+        activityManager.setActivity(new TimeTable(date));
     });
 
-    private static Menu menu=new Menu(new String[]{"Чарт", "Расписание", "Настройки", "Выход"},
+    private static SACK_pc_client.Controls.Menu menu=new SACK_pc_client.Controls.Menu(new String[]{"Чарт", "Расписание", "Выход"},
             (i) -> {
                 switch (i) {
-                    case 0: weekDaysPanel.setState(WeekDaysPanel.State.nonSelectable); break;
-                    case 1: weekDaysPanel.setState(WeekDaysPanel.State.selectable); break;
-                    case 2: weekDaysPanel.setState(WeekDaysPanel.State.hidden); break;
-                    case 3: weekDaysPanel.setState(WeekDaysPanel.State.hidden); break;
+                    case 0: {
+                        weekDaysPanel.setState(WeekDaysPanel.State.nonSelectable);
+                        activityManager.setActivity(new Chart());
+                        break;
+                    }
+                    case 1: {
+                        weekDaysPanel.setState(WeekDaysPanel.State.selectable);
+                        activityManager.setActivity(new TimeTable(0));
+                        break;
+                    }
+                    case 2: {
+                        weekDaysPanel.setState(WeekDaysPanel.State.hidden);
+                        System.exit(0);
+                        break;
+                    }
                 }
 
             });
@@ -42,6 +57,7 @@ public class UICanvas extends Canvas {
             public void mouseClicked(MouseEvent e) {
                 menu.mouseClick(e.getX(), e.getY());
                 weekDaysPanel.mouseClick(e.getX(), e.getY());
+                activityManager.mouseClick(e.getX(), e.getY());
             }
 
             @Override
@@ -64,6 +80,7 @@ public class UICanvas extends Canvas {
 
             }
         });
+        menu.reselectMenuItem(1);
     }
 
 
@@ -82,7 +99,7 @@ public class UICanvas extends Canvas {
     private void update() {
         menu.update();
         weekDaysPanel.update();
-        chart.update();
+        activityManager.update();
     }
 
     private BufferStrategy bs;
@@ -91,22 +108,18 @@ public class UICanvas extends Canvas {
 
         Graphics2D g2 = (Graphics2D) bs.getDrawGraphics();
 
+
         g2.setRenderingHint(
                 RenderingHints.KEY_TEXT_ANTIALIASING,
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
 
-        RenderingHints rh = new RenderingHints(
-                RenderingHints.KEY_TEXT_ANTIALIASING,
+        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-        g2.setRenderingHints(rh);
 
-        g2.setColor(lightBackgroundColor);
-        g2.fillRect(0, 0, getWidth(), getHeight());
-
-        chart.draw(g2);
+        activityManager.draw(g2);
         weekDaysPanel.draw(g2);
-        menu.draw(g2, getWidth(), getHeight());
+        menu.draw(g2);
 
 
         g2.dispose();
