@@ -18,10 +18,25 @@ public class Serial {
             case RequestTime: return request("2");
             case RequestRings: return request("1");
             case SetRings: {
+
+                /*
+                    Входная строка вида 25,30,1002:,:,:14,16,28:,:,:,
+                    Переводим её в массив байт вида
+                        количество звонков в понедельник
+                            первый байт первого звонка
+                            второй байт первого звонка
+                            первый байт второго звонка
+                            второй байт второго звонка
+                            ...
+                        количество звонков во вторник
+                            ...
+                        ...
+                 */
+
+                //WARNING! Храним в short, так лучше стыкуются unsigned байты Си и signed байты Java
                 ArrayList<Short> bytes=new ArrayList<>();
                 bytes.add((short) '3');
                 String[] times=s.split(":");
-                System.out.println("TIMES: "+Arrays.toString(times));
                 for (int day=0; day<7; day++) {
 
                         String[] rings = times[day].split(",");
@@ -33,29 +48,30 @@ public class Serial {
                     }
 
                 }
-                String resBytes="";
-                for (Short bt: bytes)
-                resBytes+=bt+":";
-                System.out.println("bytes: "+resBytes);
-                String resp=request(bytes);
+
+                String resp=request(bytes);//отсылаем байты на дуину
                 int cycle=0;
-                while (resp==null || !resp.contains("RDone!")) {
-                    System.out.println("RESP: "+resp+" CYC: "+cycle);
+
+                while (resp==null || !resp.contains("RDone!")) {//даём дуине 50 дополнительных попыток обработать данные корректно
                     resp=request(bytes);
                     cycle++;
-                    if (cycle>10) {
-                        //10 wrong answers
+                    if (cycle>50) {
+                        //50 неправильных попыток
+                        //TODO: обработать эту ошибку
                         Logger.logError("DUINOTALK", "Can't write ringtable");
                         break;
                     }
+
                     try {
                         Thread.sleep(100);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+
                 }
-                Logger.logInfo("DUINOTALK", "\n\nPrinting table to EEPROM!\nanswer: " + resp + "\ninput: " + s+"\n");
-                return resp;
+
+                Logger.logInfo("DUINOTALK", "Printing table to EEPROM! Answer: " + resp);
+                return null;
             }
             case SetTime: {
 

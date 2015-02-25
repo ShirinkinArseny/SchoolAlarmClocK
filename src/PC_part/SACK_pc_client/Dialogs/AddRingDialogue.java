@@ -36,6 +36,27 @@ public class AddRingDialogue extends JDialog {
             resultLabel.setText(h+" часов, "+m+" минут, "+s+" секунд");
             buttonOK.setEnabled(true);
         }
+
+        else if (
+                input.getText().matches(
+                        "(([0-1]?\\d)|"+
+                                "(2[0-3]))"+
+                                "[ ]*:[ ]*"+
+                                "[0-5]?\\d"
+                )
+
+
+                )
+        {
+            String[] times=input.getText().split(":");
+            int h=Integer.valueOf(times[0].trim());
+            int m=Integer.valueOf(times[1].trim());
+            resultLabel.setText(h+" часов, "+m+" минут");
+            buttonOK.setEnabled(true);
+
+
+        }
+
         else {
             if (Objects.equals(input.getText(), ""))
                 resultLabel.setText("Пусто ~_~");
@@ -92,7 +113,7 @@ public class AddRingDialogue extends JDialog {
         String[] times=input.getText().split(":");
         int h=Integer.valueOf(times[0].trim());
         int m=Integer.valueOf(times[1].trim());
-        int s=Integer.valueOf(times[2].trim());
+        int s=times.length>2?Integer.valueOf(times[2].trim()):0;
         onTimeSet.accept(h*3600+m*60+s);
         dispose();
     }

@@ -51,7 +51,6 @@ public class TimeTable implements Activity {
                 reloadTimes(weekDay);
             });
 
-            System.out.println("ADD ONE MOAR");
         }, "ДОБАВИТЬ ЕЩЁ ОДИН", timeMarkXPos, PC_part.SACK_pc_client.Controls.Menu.topMargin+(2+actions.size())*(PC_part.SACK_pc_client.Controls.Menu.itemHeight+20), w, h));
 
         actions.add(new ExtendableButton(() -> {
@@ -63,7 +62,6 @@ public class TimeTable implements Activity {
             DataWrapper.setRings(weekDay, nonSelected);
             reloadTimes(weekDay);
 
-            System.out.println("REM SELECTED");
         }, "УДАЛИТЬ ВЫДЕЛЕННЫЕ", timeMarkXPos, PC_part.SACK_pc_client.Controls.Menu.topMargin+(2+actions.size())*(PC_part.SACK_pc_client.Controls.Menu.itemHeight+20), w, h));
 
         actions.add(new ExtendableButton(() -> {
@@ -73,7 +71,6 @@ public class TimeTable implements Activity {
                 if (r.getSelected())
                     copiedItems.add(r.getValue());
 
-            System.out.println("COPY SELECTED");
         }, "КОПИРОВАТЬ ВЫДЕЛЕННЫЕ", timeMarkXPos, PC_part.SACK_pc_client.Controls.Menu.topMargin+(2+actions.size())*(PC_part.SACK_pc_client.Controls.Menu.itemHeight+20), w, h));
 
         actions.add(new ExtendableButton(() -> {
@@ -81,14 +78,12 @@ public class TimeTable implements Activity {
             DataWrapper.addRings(weekDay, copiedItems);
             reloadTimes(weekDay);
 
-            System.out.println("INSERT");
         }, "ВСТАВИТЬ", timeMarkXPos, PC_part.SACK_pc_client.Controls.Menu.topMargin+(2+actions.size())*(PC_part.SACK_pc_client.Controls.Menu.itemHeight+20), w, h));
 
         actions.add(new ExtendableButton(() -> {
 
             ringsRects.stream().filter(ExtendableCheckbox::getSelected).forEach(ExtendableCheckbox::unselect);
 
-            System.out.println("DROP SELECT");
         }, "СБРОСИТЬ ВЫДЕЛЕНИЕ", timeMarkXPos, PC_part.SACK_pc_client.Controls.Menu.topMargin+(2+actions.size())*(PC_part.SACK_pc_client.Controls.Menu.itemHeight+20), w, h));
 
         actions.add(new ExtendableButton(() -> {
@@ -96,15 +91,9 @@ public class TimeTable implements Activity {
             DataWrapper.pop();
             reloadTimes(weekDay);
 
-            System.out.println("LOAD");
         }, "ВЗЯТЬ С ДУИНЫ", timeMarkXPos, PC_part.SACK_pc_client.Controls.Menu.topMargin+(2+actions.size())*(PC_part.SACK_pc_client.Controls.Menu.itemHeight+20), w, h));
 
-        actions.add(new ExtendableButton(() -> {
-
-            DataWrapper.push();
-
-            System.out.println("UPLOAD");
-        }, "ЗАЛИТЬ ВСЁ НА ДУИНУ", timeMarkXPos, PC_part.SACK_pc_client.Controls.Menu.topMargin+(2+actions.size())*(PC_part.SACK_pc_client.Controls.Menu.itemHeight+20), w, h));
+        actions.add(new ExtendableButton(DataWrapper::push, "ЗАЛИТЬ ВСЁ НА ДУИНУ", timeMarkXPos, PC_part.SACK_pc_client.Controls.Menu.topMargin+(2+actions.size())*(PC_part.SACK_pc_client.Controls.Menu.itemHeight+20), w, h));
 
     }
 

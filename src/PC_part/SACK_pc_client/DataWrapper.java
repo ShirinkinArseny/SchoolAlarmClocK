@@ -1,6 +1,7 @@
 package PC_part.SACK_pc_client;
 
 import PC_part.ComPort.Serial;
+import PC_part.SACK_server_pc_part.Logger;
 
 import java.util.ArrayList;
 
@@ -65,8 +66,8 @@ public class DataWrapper {
 
         String resp = serial.talkWithDuino(Serial.Action.RequestRings, null);
 
-        while (resp==null) {
-            System.out.println("RESP is null");
+        int cycle=0;
+        while (resp==null && cycle<10) {//Даём дуине 10 попыток ответить не-null значением
             resp = serial.talkWithDuino(Serial.Action.RequestRings, null);
 
             try {
@@ -74,12 +75,26 @@ public class DataWrapper {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            cycle++;
         }
-        System.out.println(resp);
+        if (cycle>=10 || resp==null) {
+            Logger.logError("DataWrapper", "Can't get data from duino");
+            return;
+        }
 
-        String[] days = resp.split("],\\[");
-        for (int i = 0; i < 7; i++) {
-            days[i] = days[i].replaceAll("[\\[\\]]", "");
+        int i=0;
+        String[] days = new String[7];
+        while (i<7) {
+
+            int index=resp.indexOf("],[");
+            if (index==-1) index=resp.length()-1;
+            days[i]=(index+3)<resp.length()?resp.substring(0, index).replaceAll("[\\[\\]]", ""):resp;
+            resp=(index+3)<resp.length()?resp.substring(index+3):"";
+
+            i++;
+        }
+
+        for (i = 0; i < 7; i++) {
 
             String rings[] = days[i].split(",");
 
@@ -95,6 +110,9 @@ public class DataWrapper {
             removeSame(i);
 
         }
+
+
+        Logger.logInfo("DataWrapper", "Got data from duino");
 
     }
 
@@ -122,9 +140,11 @@ public class DataWrapper {
     }
 
     public static void disconnect() {
-        connectionState="Отсоединение...";
-        serial.disconnect();
-        connectionState="Нет соединений";
+        if (serial.getIsConnected()) {
+            connectionState = "Отсоединение...";
+            serial.disconnect();
+            connectionState = "Нет соединений";
+        }
     }
 
     public static void connect(String value) {
