@@ -1,6 +1,7 @@
 package PC_part.SACK_server_pc_part;
 
 import PC_part.ComPort.Serial;
+import PC_part.ComPort.WiredSerial;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -12,6 +13,18 @@ import static PC_part.SACK_server_pc_part.ContentUtils.loadLocal;
 import static PC_part.SACK_server_pc_part.Logger.logError;
 import static PC_part.SACK_server_pc_part.Logger.logInfo;
 import static PC_part.SACK_server_pc_part.Logger.logWarning;
+
+/*
+
+    TODO: fix bug
+    В связи с сменой api сериала
+    перестала работать передача новых звонков
+    (и, возможно, времени).
+
+    Надо бы починить.
+
+ */
+
 
 public class Main {
 
@@ -25,12 +38,14 @@ public class Main {
             "Connection: close"+loadLocal("404.html");
 
 
-    private static final Serial serial=new ESPSerial("192.168.1.67",2992);
+    private static final Serial serial=new WiredSerial();
 
     public static final String css = loadLocal("Style.css");
     public static final String js = loadLocal("Scripts.js");
 
     public static void main(String[] args) throws Throwable {
+
+        serial.connect(WiredSerial.getPorts()[0]);
 
         int port = -1;
         if (args.length == 0) {

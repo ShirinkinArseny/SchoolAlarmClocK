@@ -1,6 +1,7 @@
 package PC_part.SACK_pc_client;
 
 import PC_part.ComPort.Serial;
+import PC_part.ComPort.WiredSerial;
 import PC_part.SACK_server_pc_part.Logger;
 
 import java.util.ArrayList;
@@ -13,7 +14,7 @@ public class DataWrapper {
     private static String connectionState="Нет соединений";
 
     public static void init() {
-        serial=new Serial();
+        serial=new WiredSerial();
         weekdays=new ArrayList[7];
         for (int i=0; i<7; i++)
             weekdays[i]=new ArrayList<>();
@@ -121,7 +122,7 @@ public class DataWrapper {
     }
 
     public static String[] getPorts() {
-        return serial.getPorts();
+        return WiredSerial.getPorts();
     }
 
     public static void disconnect() {
@@ -138,7 +139,8 @@ public class DataWrapper {
         }
 
         connectionState="Соединение...";
-        if (serial.connect(value)) {
+        serial.connect(value);
+        if (serial.getIsConnected()) {
             connectionState="Соединено с "+value;
         } else
             connectionState="Не удалось соединиться с "+value;

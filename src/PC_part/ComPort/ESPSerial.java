@@ -1,6 +1,4 @@
-package SACK_server_pc_part;
-
-import sun.rmi.runtime.Log;
+package PC_part.ComPort;
 
 import java.net.Socket;
 
@@ -40,6 +38,24 @@ public class ESPSerial extends Serial {
         int r = espSocket.getInputStream().read(buffer);
         String s = new String(buffer,0,r);
         return new String(buffer,0,r);
+    }
+
+    @Override
+    public void connect(String name) {
+        //TODO
+
+
+    }
+
+    @Override
+    public void disconnect() {
+        //TODO
+    }
+
+    @Override
+    public boolean getIsConnected() {
+        //TODO
+        return false;
     }
 
     public void setAddress(String ipESP, int port) {
