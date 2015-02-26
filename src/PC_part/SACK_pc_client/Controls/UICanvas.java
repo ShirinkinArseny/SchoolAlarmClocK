@@ -1,9 +1,6 @@
 package PC_part.SACK_pc_client.Controls;
 
-import PC_part.SACK_pc_client.Controls.Activities.ActivityManager;
-import PC_part.SACK_pc_client.Controls.Activities.Chart;
-import PC_part.SACK_pc_client.Controls.Activities.ConnectManager;
-import PC_part.SACK_pc_client.Controls.Activities.TimeTable;
+import PC_part.SACK_pc_client.Controls.Activities.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -27,11 +24,10 @@ public class UICanvas extends Canvas {
 
     private static ActivityManager activityManager=new ActivityManager();
 
-    private static WeekDaysPanel weekDaysPanel=new WeekDaysPanel(date -> {
-        activityManager.setActivity(new TimeTable(date));
-    });
+    private static WeekDaysPanel weekDaysPanel=new WeekDaysPanel(date -> activityManager.setActivity(new TimeTable(date)));
 
-    private static PC_part.SACK_pc_client.Controls.Menu menu=new PC_part.SACK_pc_client.Controls.Menu(new String[]{"Чарт", "Расписание", "Соединение", "Выход"},
+    private static PC_part.SACK_pc_client.Controls.Menu menu=new PC_part.SACK_pc_client.Controls.Menu(
+            new String[]{"Чарт", "Расписание", "Время", "Соединение", "Выход"},
             (i) -> {
                 switch (i) {
                     case 0: {
@@ -46,10 +42,15 @@ public class UICanvas extends Canvas {
                     }
                     case 2: {
                         weekDaysPanel.setState(WeekDaysPanel.State.hidden);
-                        activityManager.setActivity(new ConnectManager());
+                        activityManager.setActivity(new TimeSync());
                         break;
                     }
                     case 3: {
+                        weekDaysPanel.setState(WeekDaysPanel.State.hidden);
+                        activityManager.setActivity(new ConnectManager());
+                        break;
+                    }
+                    case 4: {
                         weekDaysPanel.setState(WeekDaysPanel.State.hidden);
                         System.exit(0);
                         break;

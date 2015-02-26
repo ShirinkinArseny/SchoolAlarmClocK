@@ -18,6 +18,7 @@ public class MainUI extends JFrame {
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setSize(1100, 700);
+        setResizable(false);
         setVisible(true);
 
         uic.start();

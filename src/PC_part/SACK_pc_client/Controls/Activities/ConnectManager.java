@@ -1,86 +1,43 @@
 package PC_part.SACK_pc_client.Controls.Activities;
 
-import PC_part.SACK_pc_client.Controls.ExtendableButton;
-import PC_part.SACK_pc_client.Controls.ExtendableCheckbox;
 import PC_part.SACK_pc_client.Controls.UICanvas;
 import PC_part.SACK_pc_client.DataWrapper;
-import PC_part.SACK_pc_client.Resources.Images;
+import PC_part.SACK_pc_client.Controls.Menu;
 
 import java.awt.*;
-import java.util.ArrayList;
 
-public class ConnectManager implements Activity {
-
-    private ArrayList<ExtendableButton> actions;
-    private ArrayList<ExtendableCheckbox<String>> portsRects = new ArrayList<>();
-
-    private void reloadPorts() {
-        portsRects.clear();
-        String[] ports = DataWrapper.getPorts();
-        for (int i = 0; i < ports.length; i++) {
-            portsRects.add(new ExtendableCheckbox<>(ports[i], (i / 14) * 160 + PC_part.SACK_pc_client.Controls.Menu.itemWidth + 45,
-                    i % 14 * 30 + PC_part.SACK_pc_client.Controls.Menu.topMargin + 10,
-                    155, 25));
-        }
-    }
+public class ConnectManager extends ActivityWithButtons<String> {
 
     public ConnectManager() {
-        int timeMarkXPos = UICanvas.windowWidth - Images.bigBackArrow.getWidth();
 
-        int w = Images.bigBackArrow.getWidth();
-        int h = Images.bigBackArrow.getHeight();
+        super(Menu.topMargin+Menu.itemHeight+10);
 
-        actions = new ArrayList<>();
+        addButton(this::reloadCheckboxes, "ОБНОВИТЬ СПИСОК ПОРТОВ");
 
-        actions.add(new ExtendableButton(this::reloadPorts, "ОБНОВИТЬ СПИСОК ПОРТОВ", timeMarkXPos,
-                PC_part.SACK_pc_client.Controls.Menu.topMargin + (2 + actions.size()) * (PC_part.SACK_pc_client.Controls.Menu.itemHeight + 20),
-                w, h));
+        addButton(() -> getSelectedItems().forEach(DataWrapper::connect), "СОЕДИНИТЬСЯ С ЭТИМ");
 
-        actions.add(new ExtendableButton(() -> {
-            for (ExtendableCheckbox<String> es : portsRects)
-                if (es.getSelected()) {
-                    DataWrapper.connect(es.getValue());
-                    break;
-                }
-
-        }, "СОЕДИНИТЬСЯ С ЭТИМ", timeMarkXPos,
-                PC_part.SACK_pc_client.Controls.Menu.topMargin + (2 + actions.size()) * (PC_part.SACK_pc_client.Controls.Menu.itemHeight + 20),
-                w, h));
-
-        actions.add(new ExtendableButton(DataWrapper::disconnect
-
-                , "ОТСОЕДИНИТЬСЯ", timeMarkXPos,
-                PC_part.SACK_pc_client.Controls.Menu.topMargin + (2 + actions.size()) * (PC_part.SACK_pc_client.Controls.Menu.itemHeight + 20),
-                w, h));
-
-        reloadPorts();
+        addButton(DataWrapper::disconnect, "ОТСОЕДИНИТЬСЯ");
     }
 
     @Override
     public void draw(Graphics2D g2) {
-        g2.setColor(UICanvas.lightBackgroundColor);
-        g2.fillRect(0, 0, UICanvas.windowWidth, UICanvas.windowHeight);
-
-        for (ExtendableCheckbox<String> port : portsRects) {
-            port.draw(g2);
-        }
-
-        for (ExtendableButton eb : actions)
-            eb.draw(g2);
+        super.draw(g2);
 
         g2.setColor(UICanvas.darkFontColor);
         g2.setFont(UICanvas.font);
         g2.drawString(DataWrapper.getConnectionState(), PC_part.SACK_pc_client.Controls.Menu.itemWidth + 45, UICanvas.windowHeight - 50);
+
+        g2.setFont(UICanvas.fontSmall);
+        g2.drawString("Доступные порты:", PC_part.SACK_pc_client.Controls.Menu.itemWidth + 45,
+                PC_part.SACK_pc_client.Controls.Menu.topMargin+Menu.itemHeight+20);
+
     }
 
     @Override
-    public void mouseClick(int x, int y) {
-
-        for (ExtendableCheckbox<String> port : portsRects) {
-            port.click(x, y);
+    public void loadCheckBoxes() {
+        String[] ports = DataWrapper.getPorts();
+        for (String port : ports) {
+            addCheckBox(port);
         }
-
-        for (ExtendableButton eb : actions)
-            eb.click(x, y);
     }
 }

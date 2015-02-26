@@ -11,12 +11,94 @@ import java.util.Objects;
 
 public class Serial {
 
+    abstract class StringChecker {
+        abstract boolean matches(String s);
+    }
+
+    private static final int tries=100;
+
+    private String tryWhile(ArrayList<Short> request, StringChecker checker) {
+
+        int cycle=0;
+
+        String resp=request(request);
+
+        while (!checker.matches(resp)) {//даём дуине 50 попыток обработать данные корректно
+
+            String newR=read();
+            if (newR!=null)
+                resp+=newR;
+
+            cycle++;
+            if (cycle>tries) {
+                Logger.logError("DUINOTALK", "Can't process "+request);
+                break;
+            }
+
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        Logger.logInfo("Serial", "Processed in " + cycle + " steps");
+        return resp;
+    }
+
+    private String tryWhile(String request, StringChecker checker) {
+
+        int cycle=0;
+
+        String resp=request(request);
+        if (resp==null)
+            resp="";
+
+        while (!checker.matches(resp)) {//даём дуине 50 попыток обработать данные корректно
+
+            String newR=read();
+            if (newR!=null)
+                resp+=newR;
+
+            cycle++;
+            if (cycle>tries) {
+                Logger.logError("Serial", "Can't process "+request+"\n       last readed: "+resp);
+                return null;
+            }
+
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        Logger.logInfo("Serial", "Processed in " + cycle + " steps");
+        return resp;
+    }
+
     public enum Action {RequestWeekDay, RequestTime, RequestRings, SetRings, SetTime}
     public synchronized String talkWithDuino(Action act, String s) {
         switch (act) {
             case RequestWeekDay: return request("5");
-            case RequestTime: return request("2");
-            case RequestRings: return request("1");
+
+            case RequestTime: {
+                return tryWhile("2", new StringChecker() {
+                    @Override
+                    boolean matches(String s) {
+                        return s!=null && s.matches("\\d+\\r\\n");
+                    }
+                });
+            }
+
+            case RequestRings: {
+
+                    return tryWhile("1", new StringChecker() {
+                        @Override
+                        boolean matches(String s) {
+                            return s!=null && s.startsWith("[[") && s.endsWith("]]\r\n");
+                        }
+                    });
+            }
+
             case SetRings: {
 
                 /*
@@ -50,27 +132,15 @@ public class Serial {
                 }
 
                 String resp=request(bytes);//отсылаем байты на дуину
-                int cycle=0;
 
-                while (resp==null || !resp.contains("RDone!")) {//даём дуине 50 дополнительных попыток обработать данные корректно
-                    resp=request(bytes);
-                    cycle++;
-                    if (cycle>50) {
-                        //50 неправильных попыток
-                        //TODO: обработать эту ошибку
-                        Logger.logError("DUINOTALK", "Can't write ringtable");
-                        break;
+                tryWhile(bytes, new StringChecker() {
+                    @Override
+                    boolean matches(String s) {
+                        return s!=null && s.contains("RDone!");
                     }
+                });
 
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-
-                Logger.logInfo("DUINOTALK", "Printing table to EEPROM! Answer: " + resp);
+                Logger.logInfo("Serial", "Printing table to EEPROM! Answer: " + resp);
                 return null;
             }
             case SetTime: {
@@ -100,32 +170,44 @@ public class Serial {
                         bytes.add((short) (minute%256));
                         bytes.add((short) (second%256));
                         bytes.add((short) (day%256));
-                        bytes.add((short) (month%256));
-                        bytes.add((short) (year/256));
-                        bytes.add((short) (year%256));
-                        Logger.logInfo("DUINOTALK", "Input: " + s);
-                        Logger.logInfo("DUINOTALK", "Sent: " + bytes);
-                        String resp=request(bytes);
-                        Logger.logInfo("DUINOTALK", "Responsed: " + resp);
-                        return resp;
+                        bytes.add((short) (month % 256));
+                        bytes.add((short) (year / 256));
+                        bytes.add((short) (year % 256));
+
+
+                        return tryWhile(bytes, new StringChecker() {
+                            @Override
+                            boolean matches(String s) {
+                                return s!=null && s.contains("TDone!");
+                            }
+                        });
                     }
-                    Logger.logError("DUINOTALK", "Wrong time string: "+ Arrays.toString(splitted) +" - values are not in bounds");
+                    Logger.logError("Serial", "Wrong time string: "+ Arrays.toString(splitted) +" - values are not in bounds");
                 }
-                Logger.logError("DUINOTALK", "Wrong time string: "+ Arrays.toString(splitted) +" - not 6 args");
+                Logger.logError("Serial", "Wrong time string: "+ Arrays.toString(splitted) +" - not 6 args");
                 return null;
             }
         }return null;
     }
 
-    private static SerialPort serialPort;
+    private SerialPort serialPort;
+
+    public String read() {
+        try {
+            Thread.sleep(50);
+            return serialPort.readString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     public String request(ArrayList<Short> ask) {
         try {
             for (Short anAsk : ask) serialPort.writeByte(anAsk.byteValue());
             serialPort.writeByte((byte) '\n');
             serialPort.writeByte((byte) '\r');
-            Thread.sleep(10);
-            return serialPort.readString();
+            return read();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -134,9 +216,8 @@ public class Serial {
 
     public String request(String ask) {
         try {
-            serialPort.writeString(ask+"\n\r");
-            Thread.sleep(10);
-            return serialPort.readString();
+            serialPort.writeString(ask + "\n\r");
+            return read();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -160,7 +241,7 @@ public class Serial {
                 SerialPort.FLOWCONTROL_RTSCTS_OUT);
 
         try {
-            Thread.sleep(100);
+            Thread.sleep(10);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

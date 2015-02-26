@@ -49,6 +49,13 @@ public class Ring {
     }
 
     public String getHumanTime() {
+        return getHumanTime(time);
+    }
+
+    public static String getHumanTime(int time) {
+
+        if (time<0) return "-"+getHumanTime(-time);
+
         String h= String.valueOf(time/3600);
         String m=String.valueOf(time/60%60);
         String s=String.valueOf(time%60);

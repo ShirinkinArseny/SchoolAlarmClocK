@@ -66,21 +66,7 @@ public class DataWrapper {
 
         String resp = serial.talkWithDuino(Serial.Action.RequestRings, null);
 
-        int cycle=0;
-        while (resp==null && cycle<10) {//Даём дуине 10 попыток ответить не-null значением
-            resp = serial.talkWithDuino(Serial.Action.RequestRings, null);
-
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            cycle++;
-        }
-        if (cycle>=10 || resp==null) {
-            Logger.logError("DataWrapper", "Can't get data from duino");
-            return;
-        }
+        if (resp==null) return;
 
         int i=0;
         String[] days = new String[7];
@@ -100,9 +86,8 @@ public class DataWrapper {
 
             weekdays[i].clear();
             for (String r : rings) {
-                try {
+                if (r.matches("\\d+"))
                     weekdays[i].add(new Ring(Integer.parseInt(r)));
-                } catch (Exception e) {}
             }
 
 
@@ -154,7 +139,6 @@ public class DataWrapper {
 
         connectionState="Соединение...";
         if (serial.connect(value)) {
-            pop();
             connectionState="Соединено с "+value;
         } else
             connectionState="Не удалось соединиться с "+value;
@@ -162,5 +146,23 @@ public class DataWrapper {
 
     public static String getConnectionState() {
         return connectionState;
+    }
+
+    public static boolean getIsConnected() {
+        return serial.getIsConnected();
+    }
+
+    public static void setTime() {
+        serial.talkWithDuino(Serial.Action.SetTime, new java.text.SimpleDateFormat("HH:mm:ss:dd:MM:yyyy").format(new java.util.Date()));
+    }
+
+    public static int getDuinoTime() {
+        String val=serial.talkWithDuino(Serial.Action.RequestTime, null);
+
+        if (val!=null) {
+            val = val.substring(0, val.length() - 2);
+            return Integer.valueOf(val);
+        }
+        return -1;
     }
 }

@@ -8,7 +8,7 @@ long getCurrentTime() {
     return 3600L*hour()+60L*minute()+second();
 }
 
-#define DELAY_TIME_COEF 10000   //длительность стандартного звонка
+#define DELAY_TIME_COEF 2000   //длительность стандартного звонка
 
 Ring* weekRings[7]; //все звонки на этой неделе. //TODO: LINKS!
 
