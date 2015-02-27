@@ -25,7 +25,7 @@ public class Main {
             "Connection: close"+loadLocal("404.html");
 
 
-    private static final Serial serial=new Serial();
+    private static final Serial serial=new ESPSerial("192.168.1.67",2992);
 
     public static final String css = loadLocal("Style.css");
     public static final String js = loadLocal("Scripts.js");
