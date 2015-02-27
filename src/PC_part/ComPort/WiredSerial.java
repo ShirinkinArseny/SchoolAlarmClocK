@@ -9,33 +9,40 @@ public class WiredSerial extends Serial {
     private static SerialPort serialPort;
 
     @Override
-    void initConnection() throws Exception {
+    void initConnection() {
     }
 
     @Override
-    void closeConnection() throws Exception {
+    void closeConnection() {
     }
 
     @Override
-    void sendByte(byte b) throws Exception {
-        serialPort.writeByte(b);
-    }
-    @Override
-    void sendString(String s) throws Exception {
-        serialPort.writeString(s);
+    void sendByte(byte b) {
+        try {
+            serialPort.writeByte(b);
+        } catch (SerialPortException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
-    void sendStop() throws Exception {
-        sendByte((byte)'\r');
-        sendByte((byte) '\n');
+    void sendString(String s) {
+        try {
+            serialPort.writeString(s);
+        } catch (SerialPortException e) {
+            e.printStackTrace();
+        }
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     String readString() {
             try {
-                Thread.sleep(50);
-                return readString();
+                return serialPort.readString();
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;

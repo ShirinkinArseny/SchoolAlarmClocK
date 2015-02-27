@@ -165,7 +165,7 @@ public class Main {
                             os.write(css.getBytes());
                             break;
                         case "getRings":
-                            os.write((serial.talkWithDuino(Serial.Action.RequestRings, null)).getBytes());
+                            os.write(serial.talkWithDuino(Serial.Action.RequestRings, null).getBytes());
                             break;
                         case "getTime":
                             os.write(serial.talkWithDuino(Serial.Action.RequestTime, null).getBytes());

@@ -16,27 +16,30 @@ public abstract class Serial {
     /*
             Начало передачи сообщения
      */
-    abstract void initConnection() throws Exception;
+    abstract void initConnection();
 
     /*
            Конец передачи сообщения
     */
-    abstract void closeConnection() throws Exception;
+    abstract void closeConnection();
 
     /*
             Отправка одного байта
      */
-    abstract void sendByte(byte b) throws Exception;
+    abstract void sendByte(byte b);
 
     /*
             Отправка строки
      */
-    abstract void sendString(String s) throws Exception;
+    abstract void sendString(String s);
 
     /*
             Отправка сообщения о завершении передачи
      */
-    abstract void sendStop() throws Exception;
+    void sendStop() throws Exception {
+        sendByte((byte) '\n');
+        sendByte((byte) '\r');
+    }
 
     /*
             Чтение строки
@@ -59,33 +62,24 @@ public abstract class Serial {
      */
     public abstract void disconnect();
 
-    public String request(ArrayList<Short> ask) {
+    public void request(ArrayList<Short> ask) {
         try {
             initConnection();
             for (Short anAsk : ask) sendByte(anAsk.byteValue());
             sendStop();
-            Thread.sleep(10);
-            String result = readString();
             closeConnection();
-            return result;
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
         }
     }
 
-    public String request(String ask) {
+    public void request(String ask) {
         try {
             initConnection();
-            sendString(ask);
-            sendStop();
-            Thread.sleep(10);
-            String result = readString();
+            sendString(ask + "\r\n");
             closeConnection();
-            return result;
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
         }
     }
 
@@ -93,7 +87,8 @@ public abstract class Serial {
 
         int cycle = 0;
 
-        String resp = request(request);
+        request(request);
+        String resp="";
 
         while (!checker.matches(resp)) {
             //даём дуине $tries попыток обработать данные корректно
@@ -105,12 +100,12 @@ public abstract class Serial {
 
             cycle++;
             if (cycle > tries) {
-                Logger.logError("Serial", "Can't process " + request);
+                Logger.logError("Serial", "Can't process " + request + "\n       last readed: " + resp);
                 break;
             }
 
             try {
-                Thread.sleep(50);
+                Thread.sleep(200);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -123,9 +118,8 @@ public abstract class Serial {
 
         int cycle = 0;
 
-        String resp = request(request);
-        if (resp == null)
-            resp = "";
+        request(request);
+        String resp="";
 
         while (!checker.matches(resp)) {
             //даём дуине $tries попыток обработать данные корректно
@@ -142,7 +136,7 @@ public abstract class Serial {
             }
 
             try {
-                Thread.sleep(50);
+                Thread.sleep(200);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -154,9 +148,18 @@ public abstract class Serial {
     public enum Action {RequestWeekDay, RequestTime, RequestRings, SetRings, SetTime}
 
     public synchronized String talkWithDuino(Action act, String s) {
+
+        Logger.logInfo("Serial", "Talking with duino, action: "+act+" request: " + s);
+
         switch (act) {
-            case RequestWeekDay:
-                return request("5");
+            case RequestWeekDay: {
+                return tryWhile("5", new StringChecker() {
+                    @Override
+                    boolean matches(String s) {
+                        return s != null && s.matches("\\d+\\r\\n");
+                    }
+                });
+            }
 
             case RequestTime: {
                 return tryWhile("2", new StringChecker() {

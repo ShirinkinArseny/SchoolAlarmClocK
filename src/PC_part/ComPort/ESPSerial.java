@@ -1,5 +1,6 @@
 package PC_part.ComPort;
 
+import java.io.IOException;
 import java.net.Socket;
 
 public class ESPSerial extends Serial {
@@ -9,42 +10,56 @@ public class ESPSerial extends Serial {
     byte[] buffer;
 
     @Override
-    void initConnection() throws Exception {
-        espSocket = new Socket(ipESP, port);
+    void initConnection() {
+        try {
+            espSocket = new Socket(ipESP, port);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
-    void closeConnection() throws Exception {
-        espSocket.close();
+    void closeConnection() {
+        try {
+            espSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
-    void sendByte(byte b) throws Exception {
-        espSocket.getOutputStream().write(b);
+    void sendByte(byte b) {
+        try {
+            espSocket.getOutputStream().write(b);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
-    void sendString(String s) throws Exception {
-        espSocket.getOutputStream().write(s.getBytes());
+    void sendString(String s) {
+        try {
+            espSocket.getOutputStream().write(s.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
-    void sendStop() throws Exception {
-        sendString("\r\n");
-    }
-
-    @Override
-    String readString() throws Exception {
-        int r = espSocket.getInputStream().read(buffer);
-        String s = new String(buffer,0,r);
+    String readString() {
+        int r;
+        try {
+            r = espSocket.getInputStream().read(buffer);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
         return new String(buffer,0,r);
     }
 
     @Override
     public void connect(String name) {
         //TODO
-
-
     }
 
     @Override
