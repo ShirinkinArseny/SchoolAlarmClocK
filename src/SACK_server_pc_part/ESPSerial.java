@@ -12,7 +12,6 @@ public class ESPSerial extends Serial {
 
     @Override
     void initConnection() throws Exception {
-        Logger.logInfo("ESP8266", "Establishing connection");
         espSocket = new Socket(ipESP, port);
     }
 
@@ -28,7 +27,6 @@ public class ESPSerial extends Serial {
 
     @Override
     void sendString(String s) throws Exception {
-        Logger.logInfo("ESP8266", "Sending string "+s);
         espSocket.getOutputStream().write(s.getBytes());
     }
 
@@ -39,10 +37,8 @@ public class ESPSerial extends Serial {
 
     @Override
     String readString() throws Exception {
-        Logger.logInfo("ESP8266", "Reading string");
         int r = espSocket.getInputStream().read(buffer);
         String s = new String(buffer,0,r);
-        Logger.logInfo("ESP8266","Got string: "+s);
         return new String(buffer,0,r);
     }
 

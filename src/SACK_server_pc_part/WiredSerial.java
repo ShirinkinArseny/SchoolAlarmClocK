@@ -46,10 +46,8 @@ public class WiredSerial extends Serial {
                     SerialPort.PARITY_NONE);
             serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN |
                     SerialPort.FLOWCONTROL_RTSCTS_OUT);
-            Logger.logInfo("Serial", "Connected to serial on /dev/ttyUSB"+index);
             return true;
         } catch (SerialPortException e) {
-            Logger.logError("Serial", "Can't connect to serial on /dev/ttyUSB"+index+", cuz "+e.toString());
             return false;
         }
     }
