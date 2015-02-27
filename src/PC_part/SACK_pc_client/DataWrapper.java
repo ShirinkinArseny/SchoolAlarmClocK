@@ -87,6 +87,8 @@ public class DataWrapper {
 
             weekdays[i].clear();
             for (String r : rings) {
+                while (r.endsWith("]"))
+                    r=r.substring(0, r.length()-1);
                 if (r.matches("\\d+"))
                     weekdays[i].add(new Ring(Integer.parseInt(r)));
             }

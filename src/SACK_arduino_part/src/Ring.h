@@ -1,3 +1,6 @@
+#ifndef Ring_header_check
+#define Ring_header_check
+
 #include <Arduino.h>
 
 /*
@@ -133,3 +136,5 @@
   Пишем в ПЗУ стандартное расписание и стандартные звонки
   */   
   void writeDefaultRings();
+
+#endif

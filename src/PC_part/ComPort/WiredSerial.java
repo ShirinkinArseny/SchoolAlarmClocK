@@ -32,16 +32,13 @@ public class WiredSerial extends Serial {
         } catch (SerialPortException e) {
             e.printStackTrace();
         }
-        try {
-            Thread.sleep(200);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
     String readString() {
             try {
+
+                Thread.sleep(10);
                 return serialPort.readString();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -70,7 +67,7 @@ public class WiredSerial extends Serial {
                     SerialPort.FLOWCONTROL_RTSCTS_OUT);
 
             try {
-                Thread.sleep(10);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

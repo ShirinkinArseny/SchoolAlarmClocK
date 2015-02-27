@@ -103,12 +103,6 @@ public abstract class Serial {
                 Logger.logError("Serial", "Can't process " + request + "\n       last readed: " + resp);
                 break;
             }
-
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
         }
         Logger.logInfo("Serial", "Processed in " + cycle + " steps");
         return resp;
@@ -133,12 +127,6 @@ public abstract class Serial {
             if (cycle > tries) {
                 Logger.logError("Serial", "Can't process " + request + "\n       last readed: " + resp);
                 return null;
-            }
-
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
         }
         Logger.logInfo("Serial", "Processed in " + cycle + " steps");
@@ -172,12 +160,15 @@ public abstract class Serial {
 
             case RequestRings: {
 
-                return tryWhile("1", new StringChecker() {
+                String rings= tryWhile("1", new StringChecker() {
                     @Override
                     boolean matches(String s) {
                         return s != null && s.matches("\\[\\[.*]]\\r\\n");
                     }
                 });
+
+                Logger.logInfo("Serial", "Gotta rings: " + rings);
+                return rings;
             }
 
             case SetRings: {
@@ -186,31 +177,49 @@ public abstract class Serial {
                     Входная строка вида 25,30,1002:,:,:14,16,28:,:,:,
                     Переводим её в массив байт вида
                         количество звонков в понедельник
-                            первый байт первого звонка
-                            второй байт первого звонка
-                            первый байт второго звонка
-                            второй байт второго звонка
+                            ссылка на первый звонок
+                            ссылка на второй звонок
                             ...
                         количество звонков во вторник
                             ...
                         ...
+                        количество уникальных звонков
+                            первый байт первого звонка
+                            второй байт первого звонка
+                            ..
                  */
 
                 //WARNING! Храним в short, так лучше стыкуются unsigned байты Си и signed байты Java
                 ArrayList<Short> bytes = new ArrayList<>();
                 bytes.add((short) '3');
+
+                ArrayList<Integer> realRings=new ArrayList<>();
+
                 String[] times = s.split(":");
                 for (int day = 0; day < 7; day++) {
 
                     String[] rings = times[day].split(",");
-                    bytes.add((short) (rings.length));//TODO: В СЕРВЕРЕ ПЕРЕДЕЛАТЬ
+                    bytes.add((short) (rings.length));
                     for (String ring : rings) {
                         int value = Integer.valueOf(ring);
-                        bytes.add((short) (value / 256));
-                        bytes.add((short) (value % 256));
-                    }
 
+                        int index=realRings.indexOf(value);
+                        if (index==-1) {
+                            bytes.add((short) realRings.size());
+                            realRings.add(value);
+                        } else {
+                            bytes.add((short) index);
+                        }
+                    }
                 }
+
+                bytes.add((short) realRings.size());
+                for (Integer i: realRings) {
+                    bytes.add((short) (i/256));
+                    bytes.add((short) (i%256));
+                }
+                Logger.logInfo("Serial", "Trying to print table to EEPROM: " + bytes);
+
 
                 String resp = tryWhile(bytes, new StringChecker() {
                     @Override

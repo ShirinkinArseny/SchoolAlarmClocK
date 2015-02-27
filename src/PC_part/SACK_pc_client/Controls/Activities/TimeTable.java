@@ -4,6 +4,7 @@ import PC_part.SACK_pc_client.Controls.Menu;
 import PC_part.SACK_pc_client.DataWrapper;
 import PC_part.SACK_pc_client.Dialogs.AddRingDialogue;
 import PC_part.SACK_pc_client.Ring;
+import PC_part.SACK_server_pc_part.Logger;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;

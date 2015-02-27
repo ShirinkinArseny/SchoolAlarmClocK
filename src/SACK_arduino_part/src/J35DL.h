@@ -1,3 +1,6 @@
+#ifndef J35DB_header_check
+#define J35DB_header_check
+
 #include <Arduino.h>
 
 /*
@@ -44,3 +47,5 @@ void stopSending();                 //  Завершение передачи
   Установка соединения. Sync - правый аудиоканал для тактовой частоты, channel - левый аудиоканал для передачи информации
 */
 void initConnection(int sync, int channel);
+
+#endif

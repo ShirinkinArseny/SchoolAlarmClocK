@@ -10,7 +10,7 @@ long getCurrentTime() {
 
 #define DELAY_TIME_COEF 2000   //длительность стандартного звонка
 
-Ring* weekRings[7]; //все звонки на этой неделе. //TODO: LINKS!
+Ring* weekRings; //все звонки сегодня.
 
 byte currentWeekDay=0; //текущий день недели
 
@@ -22,19 +22,13 @@ byte getWeekDay() {
   if (wDay<0) wDay+=7;
   return wDay;
 }
-
-void loadWeekRings() {
-  for (byte i=0; i<7; i++)
-    weekRings[i]=getDayRings(i);
-}
-
-void clearWeekRings() {
-    for (byte i=0; i<7; i++)
-         delete(weekRings[i]);
-}
-
 long lastTimeSec=0;     //прошлое время от начала дня в секундах
 long currentTimeSec=0;  //текущее время от начала дня в секундах
+
+void loadTodayRings() {
+             delete(weekRings);
+             weekRings=getDayRings(currentWeekDay);
+}
 
 void initRingKeeper(byte ringPin) {
   Serial.begin(9600);
@@ -45,7 +39,7 @@ void initRingKeeper(byte ringPin) {
   //writeDefaultRings();
 
   currentWeekDay=getWeekDay();
-  loadWeekRings();
+  weekRings=getDayRings(currentWeekDay);
 
   lastTimeSec=getCurrentTime();
 }
@@ -72,209 +66,178 @@ void makeRing() {
 
 char* done="Done!";
 
+int readValue() {
+    int value=Serial.read();
+
+    byte cyc=0;
+
+    while (value<0 && cyc<10) {
+            value=Serial.read();
+            cyc++;
+            delay(10);
+    }
+
+    return value;
+}
+
+boolean checkForWrongRead(int value, char* error, int day, int ring) {
+    if (value<0) {
+             Serial.print(error);
+             Serial.print(':');
+             Serial.print(day);
+             Serial.print(':');
+             Serial.println(ring);
+             loadTodayRings();
+             return true;
+    }
+    return false;
+}
+
+void readNewRingsTableFromSerial() {
+/*
+
+            Получаем таблицу звонков в виде
+
+                Количество звонков в первый день
+                Первый звонок (индекс) первого дня
+                ..
+                Последний звонок (индекс) первого дня
+                Количество звонков во второй день
+                Первый звонок (индекс) второго дня
+                ..
+                Последний звонок (индекс) второго дня
+                ..
+                Последний звонок (индекс) последнего дня
+                Количество звонков
+                Первый звонок
+                Второй звонок
+                ...
+                Последний звонок
+
+            Преобразуем звонки в их представление в ПЗУ
+
+        */
+
+            /*
+                Читаем ссылки на звонки
+            */
+            for (byte day=0; day<7; day++) {
+
+                int size=readValue(); //Количество звонков в day-ый день
+                if (checkForWrongRead(size, "E1", day, -1)) return;
+
+                writeDayRingsNumberToEEPROM(day, size);
+
+                for (byte ring=0; ring<size; ring++) {
+
+                    int link=readValue();
+                    if (checkForWrongRead(link, "E2", day, ring)) return;
+                    writeDayRingToEEPROM(day, ring, link);
+                }
+            }
+
+            int size=readValue(); //Количество звонков
+            if (checkForWrongRead(size, "E3", 7, 0)) return;
+
+            /*
+                Читаем звонки
+            */
+            for (byte ring=0; ring<size; ring++) {
+
+                int b1=readValue();
+                if (checkForWrongRead(b1, "E4", 7, ring)) return;
+
+                int b2=readValue();
+                if (checkForWrongRead(b2, "E5", 7, ring)) return;
+
+                Ring(256*b1+b2).writeToEEPROM(ring);
+            }
+            loadTodayRings();
+            Serial.print('R');
+            Serial.println(done);
+}
+
+void printRingsTableToSerial() {
+    Serial.print('[');
+    for (byte day=0; day<7; day++) {
+
+        delete(weekRings);
+        weekRings=getDayRings(day);
+
+        Serial.print('[');
+        int ring=0;
+        while (!weekRings[ring].isEmpty()) {
+            Serial.print(weekRings[ring].getMemoryRepresentation());
+            Serial.print(0);
+            if (!weekRings[ring+1].isEmpty()) Serial.print(',');
+            ring++;
+        }
+        Serial.print(']');
+        if (day!=6) Serial.print(',');
+
+
+    }
+    Serial.println(']');
+    loadTodayRings();
+}
+
+void readNewTimeFromSerial() {
+    delay(20);
+
+
+    byte hours=Serial.read();
+    byte minutes=Serial.read();
+    byte seconds=Serial.read();
+    byte day=Serial.read();
+    byte month=Serial.read();
+    byte year1=Serial.read();
+    byte year2=Serial.read();
+
+    //hh-mm-ss-dd-mm-yyyy
+    setTime(
+    hours,
+    minutes,
+    seconds,
+    day,
+    month,
+    year1*256+year2);
+
+    Serial.print('T');
+    Serial.println(done);
+
+    currentTimeSec=getCurrentTime();
+    lastTimeSec=currentTimeSec-1;
+    currentWeekDay=getWeekDay();
+}
+
 void updateSerial() {
 
     int readed=Serial.read();
 
     if (readed!=-1) {
 
-    if (readed=='1') { //get rings table
-        Serial.print('[');
-        for (byte day=0; day<7; day++) {
-            Serial.print('[');
-            int ring=0;
-            while (!weekRings[day][ring].isEmpty()) {
-                Serial.print(weekRings[day][ring].getMemoryRepresentation());
-                Serial.print(0);
-                if (!weekRings[day][ring+1].isEmpty()) Serial.print(',');
-                ring++;
-            }
-            Serial.print(']');
-            if (day!=6) Serial.print(',');
+        switch (readed) {
+
+            case '1':                       //get rings table
+                printRingsTableToSerial();
+                break;
+            case '2':                       //get current time
+                Serial.println(currentTimeSec);
+                break;
+            case '3':                       //set rings table
+                readNewRingsTableFromSerial();
+                break;
+            case '4':                       //get free memory
+                printFreeMemory();
+                break;
+            case '5':                       //get week day
+                Serial.println(getWeekDay());
+                break;
+            case '6':                       //set time
+                readNewTimeFromSerial();
+                break;
+
         }
-        Serial.println(']');
-    } else
-    if (readed=='2') { //get current time
-        Serial.println(currentTimeSec);
-    }
-    if (readed=='3') { //set rings table
-
-        /*
-
-            Получаем таблицу звонков в виде
-
-                Количество звонков в первый день
-                Первый звонок первого дня
-                ..
-                Последний звонок первого дня
-                Количество звонков во второй день
-                Первый звонок второго дня
-                ..
-                Последний звонок второго дня
-                ..
-                Последний звонок последнего дня
-
-            Преобразуем звонки в их представление в ПЗУ
-
-        */
-
-
-                 byte cyc;//for sync
-
-            clearWeekRings();
-
-            byte dayRingsNumbers[7];    //Число ссылок на звонки в каждом дне недели
-            byte newDayRings[7][70];    //Ссылки на звонки в каждом дне недели
-            uint16_t newRings[256]; //Сами звонки
-            byte newRingsNumber=0;      //Количество звонков
-
-            for (byte day=0; day<7; day++) {
-
-                int size=Serial.read();
-                 //Serial.print(" got ");
-                 //Serial.print(size);
-
-                cyc=0;
-                 while (size<0 && cyc<10) {
-                    size=Serial.read();
-                    cyc++;
-                    delay(10);
-                 }
-
-                    if (size<0) {
-                             Serial.println("E0");
-                             Serial.print(":");
-                             Serial.println(day);
-                             loadWeekRings();
-                             return;
-                    }
-
-                dayRingsNumbers[day]=size;
-                for (byte ring=0; ring<dayRingsNumbers[day]; ring++) {
-
-
-                    int b1=Serial.read();
-
-                    cyc=0;
-                    while (b1<0 && cyc<10) {
-                       b1=Serial.read();
-                       cyc++;
-                       delay(10);
-                    }
-
-                 //Serial.print(" got ");
-                 //Serial.print(b1);
-
-                    if (b1<0) {
-                             Serial.print("E1:");
-                             Serial.print(ring);
-                             Serial.print(":");
-                             Serial.println(day);
-                             loadWeekRings();
-                             return;
-                    }
-                    int b2=Serial.read();
-
-                    cyc=0;
-                    while (b2<0 && cyc<10) {
-                       b2=Serial.read();
-                       cyc++;
-                       delay(10);
-                    }
-
-                // Serial.print(" got ");
-                 //Serial.print(b2);
-                    if (b2<0) {
-                             Serial.print("E2:");
-                             Serial.print(ring);
-                             Serial.print(":");
-                             Serial.println(day);
-                             loadWeekRings();
-                             return;
-                    }
-
-                    uint16_t newRing=256*b1+b2;
-
-                    boolean found=false;
-
-                    for (byte i=0; i<newRingsNumber; i++) {
-                        if (newRings[i]==newRing) {
-                            found=true;
-                            newDayRings[day][ring]=i;
-                            break;
-                        }
-                    }
-
-                    if (!found) {
-                        if (newRingsNumber>=256) {
-                             Serial.println("E3");
-                             return;
-                        }
-                        newRings[newRingsNumber]=newRing;
-                        newDayRings[day][ring]=newRingsNumber;
-                        newRingsNumber++;
-                    }
-                }
-            }
-
-            for (byte day=0; day<7; day++) {
-                writeDayRingsNumberToEEPROM(day, dayRingsNumbers[day]);
-                for (byte ring=0; ring<dayRingsNumbers[day]; ring++) {
-                    writeDayRingToEEPROM(day, ring, newDayRings[day][ring]);
-                }
-            }
-
-            for (byte ring=0; ring<newRingsNumber; ring++) {
-                Ring r=Ring(newRings[ring]);
-                r.writeToEEPROM(ring);
-            }
-
-            loadWeekRings();
-            Serial.print('R');
-            Serial.println(done);
-    } else
-    if (readed=='4') { //get free memory
-            printFreeMemory();
-    } else
-    if (readed=='5') { //get week day
-            Serial.println(getWeekDay());
-    } else
-    if (readed=='6') { //set time
-
-            delay(20);
-
-
-            byte hours=Serial.read();
-            byte minutes=Serial.read();
-            byte seconds=Serial.read();
-            byte day=Serial.read();
-            byte month=Serial.read();
-            byte year1=Serial.read();
-            byte year2=Serial.read();
-
-            Serial.print(hours); Serial.print(' ');
-            Serial.print(minutes); Serial.print(' ');
-            Serial.print(seconds); Serial.print(' ');
-            Serial.print(day); Serial.print(' ');
-            Serial.print(month); Serial.print(' ');
-            Serial.print(year1*256+year2); Serial.print(' ');
-
-            //hh-mm-ss-dd-mm-yyyy
-            setTime(
-            hours,
-            minutes,
-            seconds,
-            day,
-            month,
-            year1*256+year2);
-
-            Serial.print('T');
-            Serial.println(done);
-
-            currentTimeSec=getCurrentTime();
-            lastTimeSec=currentTimeSec-1;
-            currentWeekDay=getWeekDay();
-    }
     }
 }
 
@@ -289,61 +252,16 @@ void updateRingKeeper() {
           //полночь, переход между днями
         lastTimeSec=0;
         currentWeekDay=getWeekDay();
+        loadTodayRings();
       return;
     }
 
     byte i=0;
-    while (!weekRings[currentWeekDay][i].isEmpty()) {
-      long ringTime=weekRings[currentWeekDay][i].getSecondFromDayStart();
+    while (!weekRings[i].isEmpty()) {
+      long ringTime=weekRings[i].getSecondFromDayStart();
       if (currentTimeSec>=ringTime && lastTimeSec<ringTime) {
 
-        startSending();
-
-
-            sendText('\n');
-            byte j=0;
-            while (!weekRings[currentWeekDay][j].isEmpty()) {
-                    sendNumber(weekRings[currentWeekDay][j].getSecondFromDayStart());
-                    sendText(' ');
-                    j++;
-            }
-            sendText('-');
-
-            sendNumber(currentWeekDay);
-            sendText(' ');
-            sendNumber(currentTimeSec);
-            sendText(' ');
-            sendNumber(lastTimeSec);
-            sendText(':');
-            sendNumber(ringTime);
-            sendText(' ');
-            sendNumber(i);
-            sendText('\n');
-        stopSending();
-
 	    makeRing();
-
-        startSending();
-
-            sendText('\n');
-            j=0;
-            while (!weekRings[currentWeekDay][j].isEmpty()) {
-                    sendNumber(weekRings[currentWeekDay][j].getSecondFromDayStart());
-                    sendText(' ');
-                    j++;
-            }
-            sendText('-');
-
-            sendNumber(currentWeekDay);
-            sendText(' ');
-            sendNumber(currentTimeSec);
-            sendText(' ');
-            sendNumber(lastTimeSec);
-            sendText(':');
-            sendNumber(ringTime);
-            sendText(' ');
-            sendNumber(i);
-            sendText('\n');
 
 	    break;
       }
