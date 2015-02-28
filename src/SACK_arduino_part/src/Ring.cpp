@@ -8,6 +8,15 @@
 
 #define RINGS_DATABLOCK_START 512
 
+#ifdef USE_EXTERNAL_EEPROM
+#include "ExtEEPROM.h"
+#define readByte(address) readEEPROM(address)
+#define writeByte(address,value) writeEEPROM(address,value)
+#else //In case of internal
+#define readByte(address) EEPROM.read(address)
+#define writeByte(address, value) EEPROM.write(address.value)
+#endif  //USE_EXTERNAL_EEPROM
+
 
 Ring::Ring (uint16_t memoryRepresentation) {
   Ring::memoryRepresentation=memoryRepresentation;
@@ -22,7 +31,7 @@ Ring::Ring (byte hours, byte minutes, byte seconds) {
 
 Ring loadByAddress (byte address) {
   byte doubled=address*2;
-  return Ring(EEPROM.read(RINGS_DATABLOCK_START+doubled)*256+EEPROM.read(RINGS_DATABLOCK_START+doubled+1));
+  return Ring(readByte(RINGS_DATABLOCK_START+doubled)*256+readByte(RINGS_DATABLOCK_START+doubled+1));
 }
 
 
@@ -41,12 +50,12 @@ long Ring::getSecondFromDayStart() {
 Ring* getDayRings(byte dayOfWeek) {
   int index=RINGS_PER_DAY*dayOfWeek;
 
-  byte ringsNumber=EEPROM.read(index);
+  byte ringsNumber=readByte(index);
 
   Ring *rings=(Ring *) malloc(sizeof(Ring) * (ringsNumber+1));
 
   for (byte i=0; i<ringsNumber; i++) {
-    rings[i]=loadByAddress(EEPROM.read(index+i+1));
+    rings[i]=loadByAddress(readByte(index+i+1));
   }
   rings[ringsNumber]=Ring(EMPTY_RING);
 
@@ -59,17 +68,17 @@ boolean Ring::isEmpty() {
 
 void Ring::writeToEEPROM(byte index) {
   byte doubled=index*2;
-  EEPROM.write(RINGS_DATABLOCK_START+doubled, Ring::memoryRepresentation/256);
-  EEPROM.write(RINGS_DATABLOCK_START+doubled+1, Ring::memoryRepresentation%256);
+  writeByte(RINGS_DATABLOCK_START+doubled, Ring::memoryRepresentation/256);
+  writeByte(RINGS_DATABLOCK_START+doubled+1, Ring::memoryRepresentation%256);
 }
 
 
 void writeDayRingToEEPROM(byte day, byte dayRingNumber, byte ringNumber) {
-  EEPROM.write(day*71+dayRingNumber+1, ringNumber);
+    writeByte(day*71+dayRingNumber+1, ringNumber);
 }
 
 void writeDayRingsNumberToEEPROM(byte day, byte ringsNumber) {
-  EEPROM.write(day*71, ringsNumber);
+  writeByte(day*71, ringsNumber);
 }
 
 void writeDefaultRings() {
