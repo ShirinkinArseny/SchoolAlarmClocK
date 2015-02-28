@@ -1,5 +1,6 @@
 package PC_part.SACK_pc_client.Controls;
 
+import PC_part.SACK_pc_client.Configurable.Design;
 import PC_part.SACK_pc_client.Resources.Images;
 
 import java.awt.*;
@@ -47,8 +48,8 @@ public class ExtendableButton {
     private static final int textYDrawOffset=35;
     public void draw(Graphics2D g2) {
         g2.drawImage(Images.bigBackArrow, x, y, null);
-        g2.setColor(UICanvas.darkFontColor);
-        g2.setFont(UICanvas.font);
+        g2.setColor(Design.darkFontColor);
+        g2.setFont(Design.font);
         g2.drawString(text, x+textXDrawOffset, y+textYDrawOffset);
 
     }

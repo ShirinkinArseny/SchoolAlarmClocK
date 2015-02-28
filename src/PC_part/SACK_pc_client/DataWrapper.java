@@ -1,7 +1,9 @@
 package PC_part.SACK_pc_client;
 
+import PC_part.Common.Serial.ESPSerial;
 import PC_part.Common.Serial.Serial;
 import PC_part.Common.Serial.WiredSerial;
+import PC_part.SACK_pc_client.Configurable.Labels;
 import PC_part.SACK_pc_client.Dialogs.ErrorDialogue;
 import PC_part.Common.Logger;
 
@@ -12,7 +14,7 @@ public class DataWrapper {
     private static ArrayList<Ring>[] weekdays;
 
     private static Serial serial;
-    private static String connectionState="Нет соединений";
+    private static String connectionState= Labels.noConnections;
 
     public static void init() {
         serial=new WiredSerial();
@@ -130,9 +132,30 @@ public class DataWrapper {
 
     public static void disconnect() {
         if (serial.getIsConnected()) {
-            connectionState = "Отсоединение...";
+            connectionState = Labels.disconnection;
             serial.disconnect();
-            connectionState = "Нет соединений";
+            connectionState = Labels.noConnections;
+        }
+    }
+
+    private static String ipToString(int[] ip) {
+        return ip[0]+"."+ip[1]+"."+ip[2]+"."+ip[3];
+    }
+
+    public static void connect(int[] ip) {
+        if (serial.getIsConnected()) {
+            serial.disconnect();
+        }
+
+        connectionState=Labels.connectionNow;
+        serial=new ESPSerial();
+
+        serial.connect(ipToString(ip));
+        if (serial.getIsConnected()) {
+            connectionState=Labels.connectedTo + ipToString(ip);
+        } else {
+            connectionState = Labels.cannotConnectTo + ipToString(ip);
+            processError(Labels.cannotConnectTo + ipToString(ip));
         }
     }
 
@@ -141,13 +164,15 @@ public class DataWrapper {
             serial.disconnect();
         }
 
-        connectionState="Соединение...";
+        serial=new WiredSerial();
+
+        connectionState=Labels.connectionNow;
         serial.connect(value);
         if (serial.getIsConnected()) {
-            connectionState="Соединено с "+value;
+            connectionState=Labels.connectedTo+value;
         } else {
-            connectionState = "Не удалось соединиться с " + value;
-            processError("Не удалось соединиться с " + value);
+            connectionState = Labels.cannotConnectTo + value;
+            processError(Labels.cannotConnectTo + value);
         }
     }
 

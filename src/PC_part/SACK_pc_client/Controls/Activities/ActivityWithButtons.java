@@ -1,5 +1,6 @@
 package PC_part.SACK_pc_client.Controls.Activities;
 
+import PC_part.SACK_pc_client.Configurable.Design;
 import PC_part.SACK_pc_client.Controls.ExtendableButton;
 import PC_part.SACK_pc_client.Controls.ExtendableCheckbox;
 import PC_part.SACK_pc_client.Controls.UICanvas;
@@ -69,10 +70,10 @@ public abstract class ActivityWithButtons<T> implements Activity {
 
 
     public void draw(Graphics2D g2) {
-        g2.setColor(UICanvas.lightBackgroundColor);
+        g2.setColor(Design.lightBackgroundColor);
         g2.fillRect(0, 0, UICanvas.windowWidth, UICanvas.windowHeight);
 
-        g2.setFont(UICanvas.fontSmall);
+        g2.setFont(Design.fontSmall);
         for (ExtendableCheckbox<T> rect : checkboxes) {
             rect.draw(g2);
         }

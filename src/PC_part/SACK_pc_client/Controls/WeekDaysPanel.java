@@ -1,5 +1,7 @@
 package PC_part.SACK_pc_client.Controls;
 
+import PC_part.SACK_pc_client.Configurable.Design;
+import PC_part.SACK_pc_client.Configurable.Labels;
 import PC_part.SACK_pc_client.Resources.Images;
 
 import java.awt.*;
@@ -15,7 +17,14 @@ public class WeekDaysPanel {
     private State state = State.nonSelectable;
     private State oldState = State.selectable;
 
-    private String[] days = new String[]{"ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС"};
+    private String[] days = new String[]{
+            Labels.monday,
+            Labels.tuesday,
+            Labels.wednesday,
+            Labels.thursday,
+            Labels.friday,
+            Labels.saturday,
+            Labels.sunday};
 
     public void setState(State s) {
         if (s != state) {
@@ -77,7 +86,7 @@ public class WeekDaysPanel {
 
         for (int i = 0; i < days.length; i++) {
             int x = additionX + dayWidth * i - 1;
-            g2.setColor(s==State.nonSelectable||i==selectedDay? UICanvas.lightFontColor:UICanvas.darkFontColor);
+            g2.setColor(s==State.nonSelectable||i==selectedDay? Design.lightFontColor: Design.darkFontColor);
             g2.drawString(days[i], x + textXDrawOffset,  additionY + textYDrawOffset);
         }
     }
@@ -87,7 +96,7 @@ public class WeekDaysPanel {
     public static final int dayWidth = 108;
 
     public void draw(Graphics2D g2) {
-        g2.setFont(UICanvas.font);
+        g2.setFont(Design.font);
 
         if (inMotion.isDone() && outMotion.isDone()) {
             if (state == State.selectable || state == State.nonSelectable) {

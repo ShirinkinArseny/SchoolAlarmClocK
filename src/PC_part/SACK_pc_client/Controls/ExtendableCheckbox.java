@@ -1,5 +1,7 @@
 package PC_part.SACK_pc_client.Controls;
 
+import PC_part.SACK_pc_client.Configurable.Design;
+
 import java.awt.*;
 
 public class ExtendableCheckbox<T> {
@@ -56,7 +58,7 @@ public class ExtendableCheckbox<T> {
     }
 
     public void draw(Graphics2D g2) {
-        g2.setColor(UICanvas.lightForegroundColor);
+        g2.setColor(Design.lightForegroundColor);
         if (selected) {
             if (in.isDone()) {
                 g2.fillRect(x, y, w, h);
@@ -67,8 +69,8 @@ public class ExtendableCheckbox<T> {
                 g2.fillRect(x, y, (int) out.get2SpeedUpValue(), h);
             }
         }
-        g2.setColor(UICanvas.darkFontColor);
-        g2.setFont(UICanvas.fontSmall);
+        g2.setColor(Design.darkFontColor);
+        g2.setFont(Design.fontSmall);
         g2.drawString(text, x+5, y+20);
 
     }

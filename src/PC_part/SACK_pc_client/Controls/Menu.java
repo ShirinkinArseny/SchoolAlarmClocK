@@ -1,5 +1,6 @@
 package PC_part.SACK_pc_client.Controls;
 
+import PC_part.SACK_pc_client.Configurable.Design;
 import PC_part.SACK_pc_client.Controls.Activities.Activity;
 import PC_part.SACK_pc_client.Resources.Images;
 
@@ -66,17 +67,17 @@ public class Menu implements Activity {
     public static final int itemWidth=225;
     public static final int textXDrawOffset =20;
     public static final int textYDrawOffset =35;
-    public void draw(Graphics2D g2) {g2.setColor(UICanvas.lightForegroundColor);
+    public void draw(Graphics2D g2) {g2.setColor(Design.lightForegroundColor);
         g2.fillRect(0, 0, itemWidth, UICanvas.windowHeight);
 
 
-        g2.setFont(UICanvas.font);
+        g2.setFont(Design.font);
         for (int i = 0; i < menuItems.length; i++) {
-            g2.setColor(UICanvas.darkFontColor);
+            g2.setColor(Design.darkFontColor);
             g2.drawString(menuItems[i], textXDrawOffset, topMargin + i * itemHeight + textYDrawOffset);
         }
 
-        g2.setColor(UICanvas.darkForegroundColor);
+        g2.setColor(Design.darkForegroundColor);
         if (fullySelected) {
             g2.drawImage(Images.darkArrow, 0, topMargin + selectedMenuItem * itemHeight, null);
         } else {
@@ -84,7 +85,7 @@ public class Menu implements Activity {
             g2.drawImage(Images.darkArrow, (int)(inMotion.get2SpeedDownValue()), topMargin + selectedMenuItem * itemHeight, null);
         }
 
-        g2.setColor(UICanvas.lightFontColor);
+        g2.setColor(Design.lightFontColor);
         if (!fullySelected) g2.drawString(menuItems[lastSelectedMenuItem], textXDrawOffset +(int)(outMotion.get2SpeedUpValue()), topMargin + lastSelectedMenuItem * itemHeight + textYDrawOffset);
         g2.drawString(menuItems[selectedMenuItem], textXDrawOffset +(fullySelected?0:(int)(inMotion.get2SpeedDownValue())), topMargin + selectedMenuItem * itemHeight + textYDrawOffset);
 

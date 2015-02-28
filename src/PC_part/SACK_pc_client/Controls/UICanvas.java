@@ -1,5 +1,6 @@
 package PC_part.SACK_pc_client.Controls;
 
+import PC_part.SACK_pc_client.Configurable.Labels;
 import PC_part.SACK_pc_client.Controls.Activities.*;
 
 import javax.swing.*;
@@ -13,18 +14,6 @@ public class UICanvas extends Canvas {
     public static final int windowWidth=1100;
     public static final int windowHeight=700;
 
-    public static final Color lightBackgroundColor = new Color(0xe6e6e6);
-    public static final Color lightForegroundColor = new Color(0x55d85e);
-    public static final Color darkForegroundColor = new Color(0x1e8224);
-    public static final Color lightFontColor = lightBackgroundColor;
-    public static final Color darkFontColor = new Color(0x000000);
-
-    public static final Font font = new Font("Fira Sans Thin", Font.PLAIN, 35);
-    public static final Font fontSmall = new Font("Fira Sans Thin", Font.PLAIN, 20);
-
-    public static final Stroke thin = new BasicStroke(1);
-    public static final Stroke fat = new BasicStroke(3);
-
     public static final LongOperationWaiter longOperationWaiter=new LongOperationWaiter();
 
     private static ActivityManager activityManager=new ActivityManager();
@@ -32,7 +21,7 @@ public class UICanvas extends Canvas {
     private static WeekDaysPanel weekDaysPanel=new WeekDaysPanel(date -> activityManager.setActivity(new TimeTable(date)));
 
     private static PC_part.SACK_pc_client.Controls.Menu menu=new PC_part.SACK_pc_client.Controls.Menu(
-            new String[]{"Чарт", "Расписание", "Время", "Соединение", "Выход"},
+            new String[]{Labels.chart, Labels.table, Labels.timeSync, Labels.connection, Labels.exit},
             (i) -> {
                 switch (i) {
                     case 0: {

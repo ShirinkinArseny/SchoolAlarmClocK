@@ -1,14 +1,12 @@
 package PC_part.SACK_pc_client.Controls.Activities;
 
-import PC_part.SACK_pc_client.Controls.LongOperationWaiter;
+import PC_part.SACK_pc_client.Configurable.Labels;
 import PC_part.SACK_pc_client.Controls.Menu;
-import PC_part.SACK_pc_client.Controls.TimeFunction;
 import PC_part.SACK_pc_client.Controls.UICanvas;
 import PC_part.SACK_pc_client.DataWrapper;
 import PC_part.SACK_pc_client.Dialogs.AddRingDialogue;
 import PC_part.SACK_pc_client.Ring;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
@@ -31,7 +29,7 @@ public class TimeTable extends ActivityWithButtons<Ring> {
             Ring r = new Ring(integer);
             DataWrapper.addRing(weekDay, r);
             reloadCheckboxes();
-        }), "ДОБАВИТЬ ЕЩЁ ОДИН");
+        }), Labels.addOneMoreRing);
 
         addButton(() -> {
 
@@ -40,22 +38,22 @@ public class TimeTable extends ActivityWithButtons<Ring> {
 
                     reloadCheckboxes();
                 },
-                "УДАЛИТЬ ВЫДЕЛЕННЫЕ");
+                Labels.removeSelected);
 
         addButton(() -> {
             copiedItems.clear();
             getSelectedItems().forEach(copiedItems::add);
-        }, "КОПИРОВАТЬ ВЫДЕЛЕННЫЕ");
+        }, Labels.copySelected);
 
         addButton(() -> {
 
             DataWrapper.addRings(weekDay, copiedItems);
             reloadCheckboxes();
 
-        }, "ВСТАВИТЬ");
+        }, Labels.insert);
 
 
-        addButton(this::dropSelection, "СБРОСИТЬ ВЫДЕЛЕНИЕ");
+        addButton(this::dropSelection, Labels.dropSelection);
 
         addButton(() -> {
 
@@ -70,10 +68,10 @@ public class TimeTable extends ActivityWithButtons<Ring> {
                 }).start();
 
             } else {
-                DataWrapper.processError("Мы же ещё не соединились с дуиной... ~_~");
+                DataWrapper.processError(Labels.cannotPerformOperationCuzNoConnection);
             }
 
-        }, "ВЗЯТЬ С ДУИНЫ");
+        }, Labels.getRingsFromDuino);
 
         addButton(() -> {
             if (DataWrapper.getIsConnected()) {
@@ -86,8 +84,8 @@ public class TimeTable extends ActivityWithButtons<Ring> {
                 }).start();
 
             } else
-                DataWrapper.processError("Мы же ещё не соединились с дуиной... ~_~");
-        }, "ЗАЛИТЬ ВСЁ НА ДУИНУ");
+                DataWrapper.processError(Labels.cannotPerformOperationCuzNoConnection);
+        }, Labels.writeRingsToDuino);
     }
 
     @Override

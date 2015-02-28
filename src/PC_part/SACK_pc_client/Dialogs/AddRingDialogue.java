@@ -1,5 +1,7 @@
 package PC_part.SACK_pc_client.Dialogs;
 
+import PC_part.SACK_pc_client.Configurable.Labels;
+
 import javax.swing.*;
 import java.awt.event.*;
 import java.util.Objects;
@@ -33,7 +35,7 @@ public class AddRingDialogue extends JDialog {
             int m=Integer.valueOf(times[1].trim());
             int s=Integer.valueOf(times[2].trim());
 
-            resultLabel.setText(h+" часов, "+m+" минут, "+s+" секунд");
+            resultLabel.setText(h+" "+ Labels.hours +", "+m+" "+Labels.minutes+", "+s+" "+Labels.seconds);
             buttonOK.setEnabled(true);
         }
 
@@ -51,7 +53,7 @@ public class AddRingDialogue extends JDialog {
             String[] times=input.getText().split(":");
             int h=Integer.valueOf(times[0].trim());
             int m=Integer.valueOf(times[1].trim());
-            resultLabel.setText(h+" часов, "+m+" минут");
+            resultLabel.setText(h+" "+Labels.hours +", "+m+Labels.minutes);
             buttonOK.setEnabled(true);
 
 
@@ -59,9 +61,9 @@ public class AddRingDialogue extends JDialog {
 
         else {
             if (Objects.equals(input.getText(), ""))
-                resultLabel.setText("Пусто ~_~");
+                resultLabel.setText(Labels.empty);
             else
-                resultLabel.setText("Не могу распознать время T_T");
+                resultLabel.setText(Labels.cannotParseTime);
             buttonOK.setEnabled(false);
         }
 

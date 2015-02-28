@@ -1,5 +1,7 @@
 package PC_part.SACK_pc_client.Controls.Activities;
 
+import PC_part.SACK_pc_client.Configurable.Design;
+import PC_part.SACK_pc_client.Configurable.Labels;
 import PC_part.SACK_pc_client.Controls.*;
 import PC_part.SACK_pc_client.Controls.Menu;
 import PC_part.SACK_pc_client.DataWrapper;
@@ -21,14 +23,14 @@ public class TimeSync extends ActivityWithButtons {
                 UICanvas.longOperationWaiter.unlock();
             }).start();
         } else {
-            DataWrapper.processError("Мы же ещё не соединились с дуиной... ~_~");
+            DataWrapper.processError(Labels.cannotPerformOperationCuzNoConnection);
         }
     }
 
     public TimeSync() {
         super(0);
 
-        addButton(this::syncTime, "ВЗЯТЬ С ДУИНЫ");
+        addButton(this::syncTime, Labels.getTimeFromDuino);
         addButton(() -> {
             if (DataWrapper.getIsConnected()) {
 
@@ -41,9 +43,9 @@ public class TimeSync extends ActivityWithButtons {
                 }).start();
 
             } else {
-                DataWrapper.processError("Мы же ещё не соединились с дуиной... ~_~");
+                DataWrapper.processError(Labels.cannotPerformOperationCuzNoConnection);
             }
-        }, "ЗАЛИТЬ МЕСТНОЕ");
+        }, Labels.writeLocalTime);
 
         if (DataWrapper.getIsConnected()) {
             new Thread(this::syncTime).start();
@@ -57,15 +59,15 @@ public class TimeSync extends ActivityWithButtons {
         super.draw(g2);
 
 
-        g2.setColor(UICanvas.darkFontColor);
-        g2.setFont(UICanvas.fontSmall);
+        g2.setColor(Design.darkFontColor);
+        g2.setFont(Design.fontSmall);
 
 
-        g2.drawString("Время на дуине:", Menu.itemWidth + 65, Menu.topMargin + Menu.itemHeight * 3 + 25);
+        g2.drawString(Labels.duinoTime, Menu.itemWidth + 65, Menu.topMargin + Menu.itemHeight * 3 + 25);
         g2.drawString(Ring.getHumanTime(time), Menu.itemWidth + 65, Menu.topMargin + Menu.itemHeight * 3 + 65);
 
-        g2.setFont(UICanvas.font);
-        g2.drawString("Местное время:",
+        g2.setFont(Design.font);
+        g2.drawString(Labels.localTime,
                 Menu.itemWidth + 65, Menu.topMargin + Menu.itemHeight * 7 + 15);
         g2.drawString(hms.format(new java.util.Date()),
                 Menu.itemWidth + 65, Menu.topMargin+Menu.itemHeight*8+15);

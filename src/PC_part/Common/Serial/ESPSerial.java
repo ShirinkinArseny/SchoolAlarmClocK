@@ -9,6 +9,10 @@ public class ESPSerial extends Serial {
     private int port;
     byte[] buffer;
 
+    public ESPSerial() {
+        //TODO
+    }
+
     @Override
     void initConnection() {
         try {

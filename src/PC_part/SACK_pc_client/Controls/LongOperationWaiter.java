@@ -1,5 +1,7 @@
 package PC_part.SACK_pc_client.Controls;
 
+import PC_part.SACK_pc_client.Configurable.Design;
+
 import java.awt.*;
 
 public class LongOperationWaiter {
@@ -62,38 +64,36 @@ public class LongOperationWaiter {
 
             if (!in.isDone()) {
                 g2.setColor(new Color(
-                        UICanvas.lightForegroundColor.getRed(),
-                        UICanvas.lightForegroundColor.getGreen(),
-                        UICanvas.lightForegroundColor.getBlue(), (int)linearValue));
+                        Design.lightForegroundColor.getRed(),
+                        Design.lightForegroundColor.getGreen(),
+                        Design.lightForegroundColor.getBlue(), (int)linearValue));
             } else {
-                g2.setColor(UICanvas.lightForegroundColor);
+                g2.setColor(Design.lightForegroundColor);
             }
 
             int angle= (int) roll.getLinearValue();
-            g2.setStroke(UICanvas.fat);
+            g2.setStroke(Design.fat);
             g2.drawArc(rollX, rollY, diameter, diameter, angle, 90);
             g2.drawArc(rollX, rollY, diameter, diameter, angle + 180, 90);
-            g2.setStroke(UICanvas.thin);
         } else
 
             if (!out.isDone()) {
 
                 float linearValue=out.getLinearValue();
 
-                g2.setColor(new Color(0, 0, 0, (int)(linearValue/2)));
+                g2.setColor(new Color(0, 0, 0, (int) (linearValue / 2)));
                 g2.fillRect(0, 0, UICanvas.windowWidth, UICanvas.windowHeight);
-                g2.setColor(new Color(0, 0, 0, (int)(linearValue/4)));
+                g2.setColor(new Color(0, 0, 0, (int) (linearValue / 4)));
                 g2.fillOval(rollXBackground, rollYBackground, diameterBackground, diameterBackground);
                 roll.launch();
                 g2.setColor(new Color(
-                        UICanvas.lightForegroundColor.getRed(),
-                        UICanvas.lightForegroundColor.getGreen(),
-                        UICanvas.lightForegroundColor.getBlue(), (int)linearValue));
+                        Design.lightForegroundColor.getRed(),
+                        Design.lightForegroundColor.getGreen(),
+                        Design.lightForegroundColor.getBlue(), (int) linearValue));
                 int angle= (int) roll.getLinearValue();
-                g2.setStroke(UICanvas.fat);
+                g2.setStroke(Design.fat);
                 g2.drawArc(rollX, rollY, diameter, diameter, angle, 90);
                 g2.drawArc(rollX, rollY, diameter, diameter, angle + 180, 90);
-                g2.setStroke(UICanvas.thin);
 
             }
     }

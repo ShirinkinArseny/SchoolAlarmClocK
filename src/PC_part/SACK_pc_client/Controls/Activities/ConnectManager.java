@@ -1,22 +1,31 @@
 package PC_part.SACK_pc_client.Controls.Activities;
 
+import PC_part.SACK_pc_client.Configurable.Design;
+import PC_part.SACK_pc_client.Configurable.Labels;
 import PC_part.SACK_pc_client.Controls.UICanvas;
 import PC_part.SACK_pc_client.DataWrapper;
 import PC_part.SACK_pc_client.Controls.Menu;
+import PC_part.SACK_pc_client.Dialogs.IPAddressREquestDialogue;
 
 import java.awt.*;
 
 public class ConnectManager extends ActivityWithButtons<String> {
 
+    private void tryWiFi() {
+        new IPAddressREquestDialogue(DataWrapper::connect);
+    }
+
     public ConnectManager() {
 
         super(Menu.topMargin+Menu.itemHeight+10);
 
-        addButton(this::reloadCheckboxes, "ОБНОВИТЬ СПИСОК ПОРТОВ");
+        addButton(this::reloadCheckboxes, Labels.updatePortsList);
 
-        addButton(() -> getSelectedItems().forEach(DataWrapper::connect), "СОЕДИНИТЬСЯ С ЭТИМ");
+        addButton(() -> getSelectedItems().forEach(DataWrapper::connect), Labels.connectToSelected);
 
-        addButton(DataWrapper::disconnect, "ОТСОЕДИНИТЬСЯ");
+        addButton(DataWrapper::disconnect, Labels.disconnect);
+
+        addButton(this::tryWiFi, Labels.network);
 
         reloadCheckboxes();
     }
@@ -25,16 +34,16 @@ public class ConnectManager extends ActivityWithButtons<String> {
     public void draw(Graphics2D g2) {
         super.draw(g2);
 
-        g2.setColor(UICanvas.darkFontColor);
-        g2.setFont(UICanvas.font);
+        g2.setColor(Design.darkFontColor);
+        g2.setFont(Design.font);
         g2.drawString(DataWrapper.getConnectionState(), PC_part.SACK_pc_client.Controls.Menu.itemWidth + 45, UICanvas.windowHeight - 50);
 
-        g2.setFont(UICanvas.fontSmall);
-        g2.drawString("Доступные порты:", PC_part.SACK_pc_client.Controls.Menu.itemWidth + 45,
+        g2.setFont(Design.fontSmall);
+        g2.drawString(Labels.usablePorts, PC_part.SACK_pc_client.Controls.Menu.itemWidth + 45,
                 PC_part.SACK_pc_client.Controls.Menu.topMargin+Menu.itemHeight+20);
 
         if (portsNumber==0) {
-            g2.drawString("А нету доступных портов ~_~", PC_part.SACK_pc_client.Controls.Menu.itemWidth + 45,
+            g2.drawString(Labels.noUsablePorts, PC_part.SACK_pc_client.Controls.Menu.itemWidth + 45,
                     PC_part.SACK_pc_client.Controls.Menu.topMargin+Menu.itemHeight+45);
         }
 

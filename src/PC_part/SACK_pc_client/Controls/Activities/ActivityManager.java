@@ -1,5 +1,6 @@
 package PC_part.SACK_pc_client.Controls.Activities;
 
+import PC_part.SACK_pc_client.Configurable.Design;
 import PC_part.SACK_pc_client.Controls.TimeFunction;
 import PC_part.SACK_pc_client.Controls.UICanvas;
 
@@ -10,7 +11,7 @@ public class ActivityManager implements Activity {
 
     private Activity currentActivity;
 
-    private TimeFunction newActivityY =new TimeFunction(0.6f, -UICanvas.windowHeight, 0);
+    private TimeFunction newActivityY =new TimeFunction(Design.activityChangeTime, -UICanvas.windowHeight, 0);
 
     public ActivityManager() {
         currentActivity=new Activity() {
