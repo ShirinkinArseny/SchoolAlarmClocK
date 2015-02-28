@@ -1,4 +1,4 @@
-package PC_part.ComPort;
+package PC_part.Common.Serial;
 
 import java.io.IOException;
 import java.net.Socket;

@@ -1,7 +1,8 @@
 package PC_part.SACK_server_pc_part;
 
-import PC_part.ComPort.Serial;
-import PC_part.ComPort.WiredSerial;
+import PC_part.Common.Logger;
+import PC_part.Common.Serial.Serial;
+import PC_part.Common.Serial.WiredSerial;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -10,21 +11,9 @@ import java.nio.charset.Charset;
 import java.util.Objects;
 
 import static PC_part.SACK_server_pc_part.ContentUtils.loadLocal;
-import static PC_part.SACK_server_pc_part.Logger.logError;
-import static PC_part.SACK_server_pc_part.Logger.logInfo;
-import static PC_part.SACK_server_pc_part.Logger.logWarning;
-
-/*
-
-    TODO: fix bug
-    В связи с сменой api сериала
-    перестала работать передача новых звонков
-    (и, возможно, времени).
-
-    Надо бы починить.
-
- */
-
+import static PC_part.Common.Logger.logError;
+import static PC_part.Common.Logger.logInfo;
+import static PC_part.Common.Logger.logWarning;
 
 public class Main {
 
@@ -97,7 +86,7 @@ public class Main {
                 String[] words = firstLine.split(" ");
                 String address = words[1];
                 if (address.startsWith("/")) address = address.substring(1);
-                Logger.logInfo("Main", "Requested "+ address);
+                Logger.logInfo("Main", "Requested " + address);
 
                 if (line.startsWith("POST")) {//processing post-request
 

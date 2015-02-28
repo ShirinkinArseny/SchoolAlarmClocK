@@ -79,7 +79,7 @@ public abstract class ActivityWithButtons<T> implements Activity {
 
         for (ExtendableButton eb: actions)
             eb.draw(g2);
-
+        UICanvas.longOperationWaiter.draw(g2);
     }
 
 }

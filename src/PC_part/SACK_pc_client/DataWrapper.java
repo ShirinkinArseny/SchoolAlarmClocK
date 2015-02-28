@@ -1,8 +1,9 @@
 package PC_part.SACK_pc_client;
 
-import PC_part.ComPort.Serial;
-import PC_part.ComPort.WiredSerial;
-import PC_part.SACK_server_pc_part.Logger;
+import PC_part.Common.Serial.Serial;
+import PC_part.Common.Serial.WiredSerial;
+import PC_part.SACK_pc_client.Dialogs.ErrorDialogue;
+import PC_part.Common.Logger;
 
 import java.util.ArrayList;
 
@@ -144,8 +145,10 @@ public class DataWrapper {
         serial.connect(value);
         if (serial.getIsConnected()) {
             connectionState="Соединено с "+value;
-        } else
-            connectionState="Не удалось соединиться с "+value;
+        } else {
+            connectionState = "Не удалось соединиться с " + value;
+            processError("Не удалось соединиться с " + value);
+        }
     }
 
     public static String getConnectionState() {
@@ -168,5 +171,9 @@ public class DataWrapper {
             return Integer.valueOf(val);
         }
         return -1;
+    }
+
+    public static void processError(String text) {
+        new ErrorDialogue(text);
     }
 }

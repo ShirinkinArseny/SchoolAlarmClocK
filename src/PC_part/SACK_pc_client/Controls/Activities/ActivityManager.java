@@ -19,17 +19,10 @@ public class ActivityManager implements Activity {
             public void mouseClick(int x, int y) {
             }
         };
-    }
+        oldRender=new BufferedImage(UICanvas.windowWidth, UICanvas.windowHeight, BufferedImage.TYPE_3BYTE_BGR);
+        newRender=new BufferedImage(UICanvas.windowWidth, UICanvas.windowHeight, BufferedImage.TYPE_3BYTE_BGR);
 
-    private BufferedImage oldRender;
-    private BufferedImage newRender;
-
-    public void setActivity(Activity a) {
-        oldRender=new BufferedImage(UICanvas.windowWidth, UICanvas.windowHeight, BufferedImage.TYPE_INT_ARGB);
-        newRender=new BufferedImage(UICanvas.windowWidth, UICanvas.windowHeight, BufferedImage.TYPE_INT_ARGB);
-
-
-        Graphics2D oldG= (Graphics2D) oldRender.getGraphics();
+        oldG= (Graphics2D) oldRender.getGraphics();
         oldG.setRenderingHint(
                 RenderingHints.KEY_TEXT_ANTIALIASING,
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
@@ -38,7 +31,7 @@ public class ActivityManager implements Activity {
         oldG.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING,
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-        Graphics2D newG= (Graphics2D) newRender.getGraphics();
+        newG= (Graphics2D) newRender.getGraphics();
         newG.setRenderingHint(
                 RenderingHints.KEY_TEXT_ANTIALIASING,
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
@@ -46,13 +39,18 @@ public class ActivityManager implements Activity {
 
         newG.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING,
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+    }
 
+    private BufferedImage oldRender;
+    private BufferedImage newRender;
+    private Graphics2D oldG;
+    private Graphics2D newG;
 
+    public void setActivity(Activity a) {
         currentActivity.draw(oldG);
         currentActivity=a;
-        currentActivity.draw(newG);
         newActivityY.launch();
-        oldG.dispose(); newG.dispose();
+        //-Dsun.java2d.opengl=True
     }
 
     @Override
@@ -60,6 +58,7 @@ public class ActivityManager implements Activity {
         if (newActivityY.isDone()) {
             currentActivity.draw(g2);
         } else {
+            currentActivity.draw(newG);
             g2.drawImage(oldRender, 0, (int)newActivityY.get4SpeedDownValue()+UICanvas.windowHeight, null);
             g2.drawImage(newRender, 0, (int)newActivityY.get4SpeedDownValue(), null);
         }
@@ -67,7 +66,7 @@ public class ActivityManager implements Activity {
 
     @Override
     public void mouseClick(int x, int y) {
-        if (newActivityY.isDone())
+        if (newActivityY.isDone() && !UICanvas.longOperationWaiter.getIsLocked())
             currentActivity.mouseClick(x, y);
     }
 }

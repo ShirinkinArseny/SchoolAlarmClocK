@@ -22,6 +22,11 @@ public class UICanvas extends Canvas {
     public static final Font font = new Font("Fira Sans Thin", Font.PLAIN, 35);
     public static final Font fontSmall = new Font("Fira Sans Thin", Font.PLAIN, 20);
 
+    public static final Stroke thin = new BasicStroke(1);
+    public static final Stroke fat = new BasicStroke(3);
+
+    public static final LongOperationWaiter longOperationWaiter=new LongOperationWaiter();
+
     private static ActivityManager activityManager=new ActivityManager();
 
     private static WeekDaysPanel weekDaysPanel=new WeekDaysPanel(date -> activityManager.setActivity(new TimeTable(date)));
@@ -117,8 +122,8 @@ public class UICanvas extends Canvas {
 
 
         g2.setRenderingHint(
-                RenderingHints.KEY_TEXT_ANTIALIASING,
-                RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+                RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
 
 
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,

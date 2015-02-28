@@ -17,6 +17,8 @@ public class ConnectManager extends ActivityWithButtons<String> {
         addButton(() -> getSelectedItems().forEach(DataWrapper::connect), "СОЕДИНИТЬСЯ С ЭТИМ");
 
         addButton(DataWrapper::disconnect, "ОТСОЕДИНИТЬСЯ");
+
+        reloadCheckboxes();
     }
 
     @Override
@@ -31,11 +33,19 @@ public class ConnectManager extends ActivityWithButtons<String> {
         g2.drawString("Доступные порты:", PC_part.SACK_pc_client.Controls.Menu.itemWidth + 45,
                 PC_part.SACK_pc_client.Controls.Menu.topMargin+Menu.itemHeight+20);
 
+        if (portsNumber==0) {
+            g2.drawString("А нету доступных портов ~_~", PC_part.SACK_pc_client.Controls.Menu.itemWidth + 45,
+                    PC_part.SACK_pc_client.Controls.Menu.topMargin+Menu.itemHeight+45);
+        }
+
     }
+
+    private int portsNumber=0;
 
     @Override
     public void loadCheckBoxes() {
         String[] ports = DataWrapper.getPorts();
+        portsNumber=ports.length;
         for (String port : ports) {
             addCheckBox(port);
         }

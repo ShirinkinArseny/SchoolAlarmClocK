@@ -1,7 +1,8 @@
-package PC_part.ComPort;
+package PC_part.Common.Serial;
 
 
-import PC_part.SACK_server_pc_part.Logger;
+import PC_part.Common.Logger;
+import PC_part.SACK_pc_client.DataWrapper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -101,6 +102,7 @@ public abstract class Serial {
             cycle++;
             if (cycle > tries) {
                 Logger.logError("Serial", "Can't process " + request + "\n       last readed: " + resp);
+                DataWrapper.processError("Какие-то косяки со связью, попробуйте ещё раз.");
                 break;
             }
         }
@@ -126,6 +128,7 @@ public abstract class Serial {
             cycle++;
             if (cycle > tries) {
                 Logger.logError("Serial", "Can't process " + request + "\n       last readed: " + resp);
+                DataWrapper.processError("Какие-то косяки со связью, попробуйте ещё раз.");
                 return null;
             }
         }

@@ -11,6 +11,8 @@ public class MainUI extends JFrame {
     public MainUI() {
         setContentPane(contentPane);
 
+        //setUndecorated(true);
+
         DataWrapper.init();
         UICanvas uic=new UICanvas();
 

@@ -1,6 +1,7 @@
-package PC_part.ComPort;
+package PC_part.Common.Serial;
 
-import PC_part.SACK_server_pc_part.Logger;
+import PC_part.Common.Logger;
+import PC_part.SACK_pc_client.DataWrapper;
 import jssc.SerialPort;
 import jssc.SerialPortException;
 import jssc.SerialPortList;
@@ -86,6 +87,7 @@ public class WiredSerial extends Serial {
             Logger.logInfo("WiredSerial", "Disconnected from serial");
         } catch (SerialPortException e) {
             Logger.logError("WiredSerial", "Can't disconnect from serial, cuz " + e.toString());
+            DataWrapper.processError("Не получилось, щито поделать дэсу");
         }
         connected=false;
     }

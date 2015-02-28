@@ -13,7 +13,16 @@ public class TimeSync extends ActivityWithButtons {
     private int time=-1;
 
     private void syncTime() {
-        time=DataWrapper.getDuinoTime();
+        if (DataWrapper.getIsConnected()) {
+
+            UICanvas.longOperationWaiter.lock();
+            new Thread(() -> {
+                time = DataWrapper.getDuinoTime();
+                UICanvas.longOperationWaiter.unlock();
+            }).start();
+        } else {
+            DataWrapper.processError("Мы же ещё не соединились с дуиной... ~_~");
+        }
     }
 
     public TimeSync() {
@@ -21,9 +30,24 @@ public class TimeSync extends ActivityWithButtons {
 
         addButton(this::syncTime, "ВЗЯТЬ С ДУИНЫ");
         addButton(() -> {
-                DataWrapper.setTime();
-                syncTime();
+            if (DataWrapper.getIsConnected()) {
+
+
+                UICanvas.longOperationWaiter.lock();
+                new Thread(() -> {
+                    DataWrapper.setTime();
+                    syncTime();
+                    UICanvas.longOperationWaiter.unlock();
+                }).start();
+
+            } else {
+                DataWrapper.processError("Мы же ещё не соединились с дуиной... ~_~");
+            }
         }, "ЗАЛИТЬ МЕСТНОЕ");
+
+        if (DataWrapper.getIsConnected()) {
+            new Thread(this::syncTime).start();
+        }
     }
 
     private static final SimpleDateFormat hms=new SimpleDateFormat("HH:mm:ss");
