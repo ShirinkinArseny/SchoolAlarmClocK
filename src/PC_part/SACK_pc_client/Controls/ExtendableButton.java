@@ -7,11 +7,6 @@ import java.awt.*;
 
 public class ExtendableButton {
 
-    /*
-    Fuck the MVC
-     */
-
-
     private int x;
     private int x2;
     private int y, y2;
@@ -20,7 +15,6 @@ public class ExtendableButton {
 
     private String text;
 
-    private static final float checkTime=0.3f;
     private Runnable onclick;
 
     public ExtendableButton(Runnable onclick, String text, int x, int y, int w, int h) {

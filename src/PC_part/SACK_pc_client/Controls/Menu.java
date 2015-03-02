@@ -12,10 +12,6 @@ public class Menu implements Activity {
 
     private String[] menuItems;
 
-    public int getSelectedMenuItem() {
-        return selectedMenuItem;
-    }
-
     private int selectedMenuItem = 0;
     private int lastSelectedMenuItem = 0;
     private boolean fullySelected = true;
@@ -62,6 +58,15 @@ public class Menu implements Activity {
     }
 
 
+
+
+    public void drawShadow(Graphics2D g2) {
+        if (Design.drawShadows)
+        g2.drawImage(Images.shadowMenu,
+                -Design.shadowRadius,
+                -Design.shadowRadius, null);
+    }
+
     public static final int topMargin=30;
     public static final int itemHeight=50;
     public static final int itemWidth=225;
@@ -79,10 +84,32 @@ public class Menu implements Activity {
 
         g2.setColor(Design.darkForegroundColor);
         if (fullySelected) {
+            if (Design.drawShadows)
+            g2.drawImage(Images.darkArrowShadowed,
+                    -Design.shadowRadius,
+                    topMargin + selectedMenuItem * itemHeight-Design.shadowRadius,
+                    null);
             g2.drawImage(Images.darkArrow, 0, topMargin + selectedMenuItem * itemHeight, null);
         } else {
-            g2.drawImage(Images.darkArrow, (int)(outMotion.get2SpeedUpValue()), topMargin + lastSelectedMenuItem * itemHeight, null);
-            g2.drawImage(Images.darkArrow, (int)(inMotion.get2SpeedDownValue()), topMargin + selectedMenuItem * itemHeight, null);
+
+
+            if (Design.drawShadows) {
+                g2.drawImage(Images.darkArrowShadowed,
+                        (int) (outMotion.get2SpeedUpValue()) - Design.shadowRadius,
+                        topMargin + lastSelectedMenuItem * itemHeight - Design.shadowRadius,
+                        null);
+
+
+                g2.drawImage(Images.darkArrowShadowed,
+                        (int) (inMotion.get2SpeedDownValue()) - Design.shadowRadius,
+                        topMargin + selectedMenuItem * itemHeight - Design.shadowRadius,
+                        null);
+            }
+
+            g2.drawImage(Images.darkArrow, (int)(outMotion.get2SpeedUpValue()),
+                    topMargin + lastSelectedMenuItem * itemHeight, null);
+            g2.drawImage(Images.darkArrow, (int) (inMotion.get2SpeedDownValue()),
+                    topMargin + selectedMenuItem * itemHeight, null);
         }
 
         g2.setColor(Design.lightFontColor);

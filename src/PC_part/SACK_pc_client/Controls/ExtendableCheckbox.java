@@ -6,11 +6,6 @@ import java.awt.*;
 
 public class ExtendableCheckbox<T> {
 
-    /*
-    Fuck the MVC
-     */
-
-
     private T data;
 
     private int x;

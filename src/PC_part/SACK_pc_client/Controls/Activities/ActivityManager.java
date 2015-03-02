@@ -51,7 +51,6 @@ public class ActivityManager implements Activity {
         currentActivity.draw(oldG);
         currentActivity=a;
         newActivityY.launch();
-        //-Dsun.java2d.opengl=True
     }
 
     @Override

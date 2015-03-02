@@ -70,6 +70,14 @@ public class WeekDaysPanel {
     private TimeFunction selectionMotion = new TimeFunction(hideAndAppearTime, 0, 0);
 
     private void drawItems(Graphics2D g2, State s, int additionX, int additionY) {
+
+
+        if (Design.drawShadows)
+        for (int i = 0; i < days.length; i++) {
+            int x = additionX + dayWidth * i - 2-Design.shadowRadius;
+            g2.drawImage(Images.doubleArrowShadowed, x, additionY-Design.shadowRadius, null);
+        }
+
         for (int i = 0; i < days.length; i++) {
             int x = additionX + dayWidth * i - 1;
             g2.drawImage(s==State.selectable? Images.lightDoubleArrow :Images.darkDoubleArrow, x, additionY, null);
@@ -77,8 +85,22 @@ public class WeekDaysPanel {
 
         if (s==State.selectable) {
             if (selectionMotion.isDone()) {
+
+                if (Design.drawShadows)
+                g2.drawImage(Images.doubleArrowShadowed,
+                        additionX + dayWidth * selectedDay - 1-Design.shadowRadius,
+                        additionY-Design.shadowRadius, null);
+
+
                 g2.drawImage(Images.darkDoubleArrow, additionX + dayWidth * selectedDay - 1, additionY, null);
+
             } else {
+
+                if (Design.drawShadows)
+                g2.drawImage(Images.doubleArrowShadowed,
+                        (int)selectionMotion.get2SpeedDownValue()-Design.shadowRadius,
+                        additionY-Design.shadowRadius, null);
+
                 g2.drawImage(Images.darkDoubleArrow, (int)selectionMotion.get2SpeedDownValue(), additionY, null);
             }
 

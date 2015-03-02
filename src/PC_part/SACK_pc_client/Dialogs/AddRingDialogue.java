@@ -3,6 +3,7 @@ package PC_part.SACK_pc_client.Dialogs;
 import PC_part.SACK_pc_client.Configurable.Labels;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.*;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -108,6 +109,7 @@ public class AddRingDialogue extends JDialog {
         input.setText(""); updateTime();
 
         setSize(400, 200);
+
         setVisible(true);
     }
 

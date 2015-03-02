@@ -6,87 +6,88 @@ public class Labels {
     /*
     Connection
      */
-    public static String updatePortsList = "ОБНОВИТЬ СПИСОК ПОРТОВ";
-    public static String connectToSelected = "СОЕДИНИТЬСЯ С ЭТИМ";
-    public static String disconnect = "ОТСОЕДИНИТЬСЯ";
-    public static String network = "ВАЙ, ВАЙ, ГДЕ ВАЙ-ФАЙ?";
-    public static String usablePorts = "Доступные порты:";
-    public static String noUsablePorts = "А нету доступных портов ~_~";
+    public static String updatePortsList = ConfigsReader.getStringValue("updatePortsList");
+    public static String connectToSelected = ConfigsReader.getStringValue("connectToSelected");
+    public static String disconnect = ConfigsReader.getStringValue("disconnect");
+    public static String network = ConfigsReader.getStringValue("network");
+    public static String usablePorts = ConfigsReader.getStringValue("usablePorts");
+    public static String noUsablePorts = ConfigsReader.getStringValue("noUsablePorts");
 
     /*
     Connection results
      */
-    public static String noConnections = "Нет соединений";
-    public static String disconnection = "Отсоединение...";
-    public static String connectionNow = "Соединение...";
-    public static String connectedTo = "Соединено с ";
-    public static String cannotConnectTo = "Не удалось соединиться с ";
+    public static String noConnections = ConfigsReader.getStringValue("noConnections");
+    public static String disconnection = ConfigsReader.getStringValue("disconnection");
+    public static String connectionNow = ConfigsReader.getStringValue("connectionNow");
+    public static String connectedTo = ConfigsReader.getStringValue("connectedTo");
+    public static String cannotConnectTo = ConfigsReader.getStringValue("cannotConnectTo");
 
     /*
     Common
      */
-    public static String cannotPerformOperationCuzNoConnection = "Мы же ещё не соединились с дуиной... ~_~";
+    public static String cannotPerformOperationCuzNoConnection =
+            ConfigsReader.getStringValue("cannotPerformOperationCuzNoConnection");
 
     /*
     Time
      */
-    public static String getTimeFromDuino = "ВЗЯТЬ С ДУИНЫ";
-    public static String writeLocalTime = "ЗАЛИТЬ МЕСТНОЕ";
-    public static String duinoTime = "Время на дуине:";
-    public static String localTime = "Местное время:";
+    public static String getTimeFromDuino = ConfigsReader.getStringValue("getTimeFromDuino");
+    public static String writeLocalTime = ConfigsReader.getStringValue("writeLocalTime");
+    public static String duinoTime = ConfigsReader.getStringValue("duinoTime");
+    public static String localTime = ConfigsReader.getStringValue("localTime");
 
     /*
     Rings
      */
-    public static String addOneMoreRing = "ДОБАВИТЬ ЕЩЁ ОДИН";
-    public static String removeSelected = "УДАЛИТЬ ВЫДЕЛЕННЫЕ";
-    public static String copySelected = "КОПИРОВАТЬ ВЫДЕЛЕННЫЕ";
-    public static String insert = "ВСТАВИТЬ";
-    public static String dropSelection = "СБРОСИТЬ ВЫДЕЛЕНИЕ";
-    public static String getRingsFromDuino = "ВЗЯТЬ С ДУИНЫ";
-    public static String writeRingsToDuino = "ЗАЛИТЬ ВСЁ НА ДУИНУ";
+    public static String addOneMoreRing = ConfigsReader.getStringValue("addOneMoreRing");
+    public static String removeSelected = ConfigsReader.getStringValue("removeSelected");
+    public static String copySelected = ConfigsReader.getStringValue("copySelected");
+    public static String insert = ConfigsReader.getStringValue("insert");
+    public static String dropSelection = ConfigsReader.getStringValue("dropSelection");
+    public static String getRingsFromDuino = ConfigsReader.getStringValue("getRingsFromDuino");
+    public static String writeRingsToDuino = ConfigsReader.getStringValue("writeRingsToDuino");
 
     /*
     Main menu
      */
-    public static String chart = "Чарт";
-    public static String table = "Расписание";
-    public static String timeSync = "Время";
-    public static String connection = "Соединение";
-    public static String exit = "Выход";
+    public static String chart = ConfigsReader.getStringValue("chart");
+    public static String table = ConfigsReader.getStringValue("table");
+    public static String timeSync = ConfigsReader.getStringValue("timeSync");
+    public static String connection = ConfigsReader.getStringValue("connection");
+    public static String exit = ConfigsReader.getStringValue("exit");
 
     /*
     Weekdays
      */
-    public static String monday = "ПН";
-    public static String tuesday = "ВТ";
-    public static String wednesday = "СР";
-    public static String thursday = "ЧТ";
-    public static String friday = "ПТ";
-    public static String saturday = "СБ";
-    public static String sunday = "ВС";
+    public static String monday = ConfigsReader.getStringValue("monday");
+    public static String tuesday = ConfigsReader.getStringValue("tuesday");
+    public static String wednesday = ConfigsReader.getStringValue("wednesday");
+    public static String thursday = ConfigsReader.getStringValue("thursday");
+    public static String friday = ConfigsReader.getStringValue("friday");
+    public static String saturday = ConfigsReader.getStringValue("saturday");
+    public static String sunday = ConfigsReader.getStringValue("sunday");
 
 
-    public static String hours = "часов";
-    public static String minutes = "минут";
-    public static String seconds = "секунд";
+    public static String hours = ConfigsReader.getStringValue("hours");
+    public static String minutes = ConfigsReader.getStringValue("minutes");
+    public static String seconds = ConfigsReader.getStringValue("seconds");
 
     /*
     Time dialogue
      */
-    public static String empty = "Пусто ~_~";
-    public static String cannotParseTime = "Не могу распознать время T_T";
+    public static String empty = ConfigsReader.getStringValue("empty");
+    public static String cannotParseTime = ConfigsReader.getStringValue("cannotParseTime");
 
     /*
     IP dialogue
      */
-    public static String wrongIP = "Кривой ip";
-    public static String niceIP = "Хороший, годный ip";
-    public static String emptyIP = "Пусто жеж";
-    public static String wrongCharactersInLine = "какие-то левые символы в адресе";
-    public static String wrongBytesNumber_6_or_8 = "неверное число байт адреса (ipv6 не нужен)";
-    public static String tooBigByte = "одно из чисел слишком не байт";
-    public static String bigByte = "одно из чисел больше 256";
-    public static String wrongBytesNumber = "неверное число байт адреса";
+    public static String wrongIP =          ConfigsReader.getStringValue("wrongIP");
+    public static String niceIP =           ConfigsReader.getStringValue("niceIP");
+    public static String emptyIP =          ConfigsReader.getStringValue("emptyIP");
+    public static String wrongCharactersInLine = ConfigsReader.getStringValue("wrongCharactersInLine");
+    public static String wrongBytesNumber_6_or_8 = ConfigsReader.getStringValue("wrongBytesNumber_6_or_8");
+    public static String tooBigByte =       ConfigsReader.getStringValue("tooBigByte");
+    public static String bigByte =          ConfigsReader.getStringValue("bigByte");
+    public static String wrongBytesNumber = ConfigsReader.getStringValue("wrongBytesNumber");
 
 }

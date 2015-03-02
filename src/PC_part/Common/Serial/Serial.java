@@ -89,7 +89,7 @@ public abstract class Serial {
         int cycle = 0;
 
         request(request);
-        String resp="";
+        String resp = "";
 
         while (!checker.matches(resp)) {
             //даём дуине $tries попыток обработать данные корректно
@@ -115,7 +115,7 @@ public abstract class Serial {
         int cycle = 0;
 
         request(request);
-        String resp="";
+        String resp = "";
 
         while (!checker.matches(resp)) {
             //даём дуине $tries попыток обработать данные корректно
@@ -140,7 +140,7 @@ public abstract class Serial {
 
     public synchronized String talkWithDuino(Action act, String s) {
 
-        Logger.logInfo("Serial", "Talking with duino, action: "+act+" request: " + s);
+        Logger.logInfo("Serial", "Talking with duino, action: " + act + " request: " + s);
 
         switch (act) {
             case RequestWeekDay: {
@@ -163,14 +163,17 @@ public abstract class Serial {
 
             case RequestRings: {
 
-                String rings= tryWhile("1", new StringChecker() {
+                String rings = tryWhile("1", new StringChecker() {
                     @Override
                     boolean matches(String s) {
                         return s != null && s.matches("\\[\\[.*]]\\r\\n");
                     }
                 });
 
-                Logger.logInfo("Serial", "Gotta rings: " + rings);
+                if (rings != null)
+                    Logger.logInfo("Serial", "Gotta rings: " + rings.replaceAll("\\n", ""));
+                else
+                    Logger.logError("Serial", "Gotta null rings");
                 return rings;
             }
 
@@ -196,7 +199,7 @@ public abstract class Serial {
                 ArrayList<Short> bytes = new ArrayList<>();
                 bytes.add((short) '3');
 
-                ArrayList<Integer> realRings=new ArrayList<>();
+                ArrayList<Integer> realRings = new ArrayList<>();
 
                 String[] times = s.split(":");
                 for (int day = 0; day < 7; day++) {
@@ -206,8 +209,8 @@ public abstract class Serial {
                     for (String ring : rings) {
                         int value = Integer.valueOf(ring);
 
-                        int index=realRings.indexOf(value);
-                        if (index==-1) {
+                        int index = realRings.indexOf(value);
+                        if (index == -1) {
                             bytes.add((short) realRings.size());
                             realRings.add(value);
                         } else {
@@ -217,9 +220,9 @@ public abstract class Serial {
                 }
 
                 bytes.add((short) realRings.size());
-                for (Integer i: realRings) {
-                    bytes.add((short) (i/256));
-                    bytes.add((short) (i%256));
+                for (Integer i : realRings) {
+                    bytes.add((short) (i / 256));
+                    bytes.add((short) (i % 256));
                 }
                 Logger.logInfo("Serial", "Trying to print table to EEPROM: " + bytes);
 

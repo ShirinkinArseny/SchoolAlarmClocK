@@ -119,6 +119,7 @@ public class UICanvas extends Canvas {
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
         activityManager.draw(g2);
+        menu.drawShadow(g2);
         weekDaysPanel.draw(g2);
         menu.draw(g2);
 
