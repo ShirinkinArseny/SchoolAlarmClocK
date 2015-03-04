@@ -23,20 +23,20 @@ public class Images {
     public static final BufferedImage lightDoubleArrow =
             multiplyToColor(loadImage("LightDoubleArrow.png"), Design.lightForegroundColor);
 
-    public static final BufferedImage darkArrow =
+    public static final BufferedImage bigArrow =
             multiplyToColor(loadImage("DarkArrow.png"), Design.darkForegroundColor);
-
-    public static final BufferedImage markBoards =
-            multiplyToColor(loadImage("MarkBoarders.png"), Design.darkFontColor);
 
     public static final BufferedImage markFilled =
             multiplyToColor(loadImage("MarkFilled.png"), Design.lightForegroundColor);
+
+    public static final BufferedImage markShadow =
+            getShadowed(loadImage("MarkFilled.png"));
 
     public static final BufferedImage shadowMenu =
             getShadowed(getBlackRect(Menu.itemWidth, UICanvas.windowHeight));
 
     public static final BufferedImage doubleArrowShadowed = getShadowed(darkDoubleArrow);
-    public static final BufferedImage darkArrowShadowed = getShadowed(darkArrow);
+    public static final BufferedImage bigArrowShadow = getShadowed(bigArrow);
 
     private static BufferedImage getBlackRect(int w, int h) {
         BufferedImage sized=new BufferedImage(

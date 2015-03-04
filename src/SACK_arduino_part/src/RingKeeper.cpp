@@ -22,6 +22,7 @@ byte getWeekDay() {
   if (wDay<0) wDay+=7;
   return wDay;
 }
+
 long lastTimeSec=0;     //прошлое время от начала дня в секундах
 long currentTimeSec=0;  //текущее время от начала дня в секундах
 
@@ -34,7 +35,7 @@ void initRingKeeper(byte ringPin) {
   Serial.begin(9600);
   ringVoltagePin=ringPin;
   pinMode(ringVoltagePin, OUTPUT);
-  initConnection(13, 12);
+  //initConnection(13, 12);
 
   //writeDefaultRings();
 
@@ -208,6 +209,8 @@ void readNewTimeFromSerial() {
     currentTimeSec=getCurrentTime();
     lastTimeSec=currentTimeSec-1;
     currentWeekDay=getWeekDay();
+
+    loadTodayRings();
 }
 
 void updateSerial() {

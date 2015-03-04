@@ -63,8 +63,10 @@ public class TimeSync extends ActivityWithButtons {
         g2.setFont(Design.fontSmall);
 
 
-        g2.drawString(Labels.duinoTime, Menu.itemWidth + 65, Menu.topMargin + Menu.itemHeight * 3 + 25);
-        g2.drawString(Ring.getHumanTime(time), Menu.itemWidth + 65, Menu.topMargin + Menu.itemHeight * 3 + 65);
+        if (DataWrapper.getIsConnected()) {
+            g2.drawString(Labels.duinoTime, Menu.itemWidth + 65, Menu.topMargin + Menu.itemHeight * 3 + 25);
+            g2.drawString(Ring.getHumanTime(time), Menu.itemWidth + 65, Menu.topMargin + Menu.itemHeight * 3 + 65);
+        }
 
         g2.setFont(Design.font);
         g2.drawString(Labels.localTime,

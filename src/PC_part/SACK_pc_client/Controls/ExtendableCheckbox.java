@@ -6,15 +6,16 @@ import java.awt.*;
 
 public class ExtendableCheckbox<T> {
 
-    private T data;
+    private final T data;
 
-    private int x;
-    private int x2;
-    private int y, y2;
-    private int w;
-    private int h;
+    private final int x;
+    private final int x2;
+    private final int y;
+    private final int y2;
+    private final int w;
+    private final int h;
 
-    private String text;
+    private final String text;
 
     private boolean selected=false;
 
@@ -34,12 +35,12 @@ public class ExtendableCheckbox<T> {
         text=data.toString();
     }
 
-    public boolean getContains(int x, int y) {
+    private boolean getContains(int x, int y) {
         return x>=this.x && x<=this.x2 && y>=this.y && y<=this.y2;
     }
 
-    private TimeFunction in;
-    private TimeFunction out;
+    private final TimeFunction in;
+    private final TimeFunction out;
 
     public void click(int x, int y) {
         if (getContains(x, y)) {

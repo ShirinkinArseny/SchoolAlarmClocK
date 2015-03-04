@@ -8,7 +8,7 @@ import javax.script.ScriptException;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
-public class ConfigsReader {
+class ConfigsReader {
 
     private static ScriptEngine engine;
     private static boolean loaded=false;
@@ -34,7 +34,7 @@ public class ConfigsReader {
         try {
             return Float.valueOf(engine.eval(name).toString());
         } catch (ScriptException e) {
-            DataWrapper.processError("Не могу прочитать параметр из конфига: "+
+            DataWrapper.processError(Labels.cannotReadConfigsValue+
                     name+", потому что "+e.getMessage());
             System.exit(1);
             return -1;
@@ -49,8 +49,8 @@ public class ConfigsReader {
         try {
             return Integer.valueOf(engine.eval(name).toString());
         } catch (ScriptException e) {
-            DataWrapper.processError("Не могу прочитать параметр из конфига: "+
-                    name+", потому что "+e.getMessage());
+            DataWrapper.processError(Labels.cannotReadConfigsValue+
+                    name+Labels.cuz+e.getMessage());
             System.exit(1);
             return -1;
         }
@@ -64,26 +64,26 @@ public class ConfigsReader {
         try {
             return String.valueOf(engine.eval(name));
         } catch (ScriptException e) {
-            DataWrapper.processError("Не могу прочитать параметр из конфига: " +
-                    name + ", потому что " + e.getMessage());
+            DataWrapper.processError(Labels.cannotReadConfigsValue +
+                    name +Labels.cuz + e.getMessage());
             System.exit(1);
             return null;
         }
     }
 
-    public static void init() {
+    private static void init() {
         engine = new ScriptEngineManager().getEngineByName("JavaScript");
         String configsText="";
         try {
             configsText=readConfigs();
         } catch (Exception e) {
-            DataWrapper.processError("Не могу прочитать конфиги :c");
+            DataWrapper.processError(Labels.cannotReadConfigsFile);
             System.exit(1);
         }
         try {
             engine.eval(configsText);
         } catch (ScriptException e) {
-            DataWrapper.processError("Кривые конфиги: "+e.getMessage());
+            DataWrapper.processError(Labels.wrongConfigs +e.getMessage());
             System.exit(1);
         }
 

@@ -7,14 +7,14 @@ public class ESPSerial extends Serial {
     private Socket espSocket;
     private String ipESP;
     private int port;
-    byte[] buffer;
+    private byte[] buffer;
 
     public ESPSerial() {
         //TODO
     }
 
     @Override
-    void initConnection() {
+    public void initConnection() {
         try {
             espSocket = new Socket(ipESP, port);
         } catch (IOException e) {
@@ -23,7 +23,7 @@ public class ESPSerial extends Serial {
     }
 
     @Override
-    void closeConnection() {
+    public void closeConnection() {
         try {
             espSocket.close();
         } catch (IOException e) {
@@ -77,12 +77,12 @@ public class ESPSerial extends Serial {
         return false;
     }
 
-    public void setAddress(String ipESP, int port) {
+    private void setAddress(String ipESP, int port) {
         this.ipESP = ipESP;
         this.port = port;
     }
 
-    public ESPSerial(String ipESP, int port, int maxStringBuffer) {
+    private ESPSerial(String ipESP, int port, int maxStringBuffer) {
         setAddress(ipESP,port);
         buffer = new byte[maxStringBuffer];
     }

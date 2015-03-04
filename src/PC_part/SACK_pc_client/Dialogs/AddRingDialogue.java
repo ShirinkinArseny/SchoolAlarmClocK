@@ -14,7 +14,7 @@ public class AddRingDialogue extends JDialog {
     private JButton buttonCancel;
     private JTextArea input;
     private JLabel resultLabel;
-    private Consumer<Integer> onTimeSet;
+    private final Consumer<Integer> onTimeSet;
 
     private void updateTime() {
 
@@ -54,7 +54,7 @@ public class AddRingDialogue extends JDialog {
             String[] times=input.getText().split(":");
             int h=Integer.valueOf(times[0].trim());
             int m=Integer.valueOf(times[1].trim());
-            resultLabel.setText(h+" "+Labels.hours +", "+m+Labels.minutes);
+            resultLabel.setText(h+" "+Labels.hours +", "+m+" "+Labels.minutes);
             buttonOK.setEnabled(true);
 
 

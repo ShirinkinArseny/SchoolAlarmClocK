@@ -12,9 +12,9 @@ public class IPAddressREquestDialogue extends JDialog {
     private JButton buttonCancel;
     private JTextArea input;
     private JLabel result;
-    private Consumer<int[]> onAddressSet;
+    private final Consumer<int[]> onAddressSet;
 
-    private int[] currentIP=new int[]{0,0,0,0};
+    private final int[] currentIP=new int[]{0,0,0,0};
 
     private void deny(String reason) {
         buttonOK.setEnabled(false);

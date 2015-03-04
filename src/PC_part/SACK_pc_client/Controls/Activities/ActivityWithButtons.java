@@ -12,17 +12,17 @@ import java.util.stream.Stream;
 
 public abstract class ActivityWithButtons<T> implements Activity {
 
-    private ArrayList<ExtendableButton> actions=new ArrayList<>();
-    private ArrayList<ExtendableCheckbox<T>> checkboxes = new ArrayList<>();
-    private int checkBoxesYOffset;
+    private final ArrayList<ExtendableButton> actions=new ArrayList<>();
+    private final ArrayList<ExtendableCheckbox<T>> checkboxes = new ArrayList<>();
+    private final int checkBoxesYOffset;
 
-    public ActivityWithButtons(int checkBoxesYOffset) {
+    ActivityWithButtons(int checkBoxesYOffset) {
         this.checkBoxesYOffset = checkBoxesYOffset;
         reloadCheckboxes();
     }
 
     private static final int timeMarkXPos= UICanvas.windowWidth- Images.bigBackArrow.getWidth();
-    public void addButton(Runnable r, String title) {
+    void addButton(Runnable r, String title) {
         int w= Images.bigBackArrow.getWidth();
         int h=Images.bigBackArrow.getHeight();
 
@@ -31,32 +31,32 @@ public abstract class ActivityWithButtons<T> implements Activity {
                 w, h));
     }
 
-    public void addCheckBox(T data) {
+    void addCheckBox(T data) {
         checkboxes.add(new ExtendableCheckbox<>(data, (checkboxes.size() / 14) * 160 + PC_part.SACK_pc_client.Controls.Menu.itemWidth + 45,
                 checkboxes.size() % 14 * 30 + PC_part.SACK_pc_client.Controls.Menu.topMargin + checkBoxesYOffset,
                 155, 25));
     }
 
-    public abstract void loadCheckBoxes();
+    protected abstract void loadCheckBoxes();
 
-    public void reloadCheckboxes() {
+    void reloadCheckboxes() {
         checkboxes.clear();
         loadCheckBoxes();
     }
 
-    public Stream<T> getSelectedItems() {
+    Stream<T> getSelectedItems() {
         return checkboxes.stream()
                 .filter(ExtendableCheckbox::getSelected)
                 .map(ExtendableCheckbox::getValue);
     }
 
-    public Stream<T> getNotSelectedItems() {
+    Stream<T> getNotSelectedItems() {
         return checkboxes.stream()
                 .filter(item -> !item.getSelected())
                 .map(ExtendableCheckbox::getValue);
     }
 
-    public void dropSelection() {
+    void dropSelection() {
         checkboxes.stream().filter(ExtendableCheckbox::getSelected).forEach(ExtendableCheckbox::unselect);
     }
 

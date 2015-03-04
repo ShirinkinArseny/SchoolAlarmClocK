@@ -1,6 +1,5 @@
 package PC_part.SACK_pc_client.Dialogs;
 
-import PC_part.SACK_pc_client.Configurable.ConfigsReader;
 import PC_part.SACK_pc_client.DataWrapper;
 import PC_part.SACK_pc_client.Controls.UICanvas;
 

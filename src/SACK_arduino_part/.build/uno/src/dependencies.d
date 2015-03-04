@@ -21,6 +21,7 @@
  /usr/share/arduino/hardware/arduino/cores/arduino/new.h \
  /usr/share/arduino/hardware/arduino/variants/standard/pins_arduino.h \
  src/Time.h
+.build/uno/src/ExtEEPROM.d .build/uno/src/ExtEEPROM.o: src/ExtEEPROM.cpp
 .build/uno/src/Ring.d .build/uno/src/Ring.o: src/Ring.cpp /usr/share/arduino/libraries/EEPROM/EEPROM.h \
  src/Ring.h /usr/share/arduino/hardware/arduino/cores/arduino/Arduino.h \
  /usr/share/arduino/hardware/arduino/cores/arduino/binary.h \

@@ -2,6 +2,7 @@ package PC_part.Common.Serial;
 
 
 import PC_part.Common.Logger;
+import PC_part.SACK_pc_client.Configurable.Labels;
 import PC_part.SACK_pc_client.DataWrapper;
 
 import java.util.ArrayList;
@@ -17,12 +18,12 @@ public abstract class Serial {
     /*
             Начало передачи сообщения
      */
-    abstract void initConnection();
+    public abstract void initConnection();
 
     /*
            Конец передачи сообщения
     */
-    abstract void closeConnection();
+    public abstract void closeConnection();
 
     /*
             Отправка одного байта
@@ -37,7 +38,7 @@ public abstract class Serial {
     /*
             Отправка сообщения о завершении передачи
      */
-    void sendStop() throws Exception {
+    private void sendStop() {
         sendByte((byte) '\n');
         sendByte((byte) '\r');
     }
@@ -63,7 +64,7 @@ public abstract class Serial {
      */
     public abstract void disconnect();
 
-    public void request(ArrayList<Short> ask) {
+    private void request(ArrayList<Short> ask) {
         try {
             initConnection();
             for (Short anAsk : ask) sendByte(anAsk.byteValue());
@@ -91,7 +92,7 @@ public abstract class Serial {
         request(request);
         String resp = "";
 
-        while (!checker.matches(resp)) {
+        while (checker.notMatches(resp)) {
             //даём дуине $tries попыток обработать данные корректно
             //(некоторые сообщения приходится читать долго, здесь мы суммируем считанное)
 
@@ -101,8 +102,8 @@ public abstract class Serial {
 
             cycle++;
             if (cycle > tries) {
-                Logger.logError("Serial", "Can't process " + request + "\n       last readed: " + resp);
-                DataWrapper.processError("Какие-то косяки со связью, попробуйте ещё раз.");
+                Logger.logError("Serial", "Can't process " + request + "\n       last read: " + resp);
+                DataWrapper.processError(Labels.networkErrors);
                 break;
             }
         }
@@ -117,7 +118,7 @@ public abstract class Serial {
         request(request);
         String resp = "";
 
-        while (!checker.matches(resp)) {
+        while (checker.notMatches(resp)) {
             //даём дуине $tries попыток обработать данные корректно
             //(некоторые сообщения приходится читать долго, здесь мы суммируем считанное)
 
@@ -127,8 +128,8 @@ public abstract class Serial {
 
             cycle++;
             if (cycle > tries) {
-                Logger.logError("Serial", "Can't process " + request + "\n       last readed: " + resp);
-                DataWrapper.processError("Какие-то косяки со связью, попробуйте ещё раз.");
+                Logger.logError("Serial", "Can't process " + request + "\n       last read: " + resp);
+                DataWrapper.processError(Labels.networkErrors);
                 return null;
             }
         }
@@ -146,8 +147,8 @@ public abstract class Serial {
             case RequestWeekDay: {
                 return tryWhile("5", new StringChecker() {
                     @Override
-                    boolean matches(String s) {
-                        return s != null && s.matches("\\d+\\r\\n");
+                    boolean notMatches(String s) {
+                        return s == null || !s.matches("\\d+\\r\\n");
                     }
                 });
             }
@@ -155,8 +156,8 @@ public abstract class Serial {
             case RequestTime: {
                 return tryWhile("2", new StringChecker() {
                     @Override
-                    boolean matches(String s) {
-                        return s != null && s.matches("\\d+\\r\\n");
+                    boolean notMatches(String s) {
+                        return s == null || !s.matches("\\d+\\r\\n");
                     }
                 });
             }
@@ -165,8 +166,8 @@ public abstract class Serial {
 
                 String rings = tryWhile("1", new StringChecker() {
                     @Override
-                    boolean matches(String s) {
-                        return s != null && s.matches("\\[\\[.*]]\\r\\n");
+                    boolean notMatches(String s) {
+                        return s == null || !s.matches("\\[\\[.*]]\\r\\n");
                     }
                 });
 
@@ -229,8 +230,8 @@ public abstract class Serial {
 
                 String resp = tryWhile(bytes, new StringChecker() {
                     @Override
-                    boolean matches(String s) {
-                        return s != null && s.contains("RDone!");
+                    boolean notMatches(String s) {
+                        return s == null || !s.contains("RDone!");
                     }
                 });
 
@@ -271,8 +272,8 @@ public abstract class Serial {
 
                         return tryWhile(bytes, new StringChecker() {
                             @Override
-                            boolean matches(String s) {
-                                return s != null && s.contains("TDone!");
+                            boolean notMatches(String s) {
+                                return s == null || !s.contains("TDone!");
                             }
                         });
                     }
@@ -286,7 +287,7 @@ public abstract class Serial {
     }
 
     abstract class StringChecker {
-        abstract boolean matches(String s);
+        abstract boolean notMatches(String s);
     }
 
     public abstract boolean getIsConnected();

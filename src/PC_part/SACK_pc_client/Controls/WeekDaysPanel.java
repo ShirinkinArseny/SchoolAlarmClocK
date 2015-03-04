@@ -10,14 +10,18 @@ import java.util.function.Consumer;
 public class WeekDaysPanel {
 
     private int selectedDay=2;
-    private Consumer<Integer> onItemSelected;
+    private final Consumer<Integer> onItemSelected;
+
+    public int getLastSelectedDay() {
+        return selectedDay;
+    }
 
     public enum State {selectable, nonSelectable, hidden}
 
     private State state = State.nonSelectable;
     private State oldState = State.selectable;
 
-    private String[] days = new String[]{
+    private final String[] days = new String[]{
             Labels.monday,
             Labels.tuesday,
             Labels.wednesday,
@@ -41,13 +45,16 @@ public class WeekDaysPanel {
         selectDay(0);
     }
 
-    public void selectDay(int day) {
+    private void selectDay(int day) {
 
-        selectionMotion.reconstruct(hideAndAppearTime, PC_part.SACK_pc_client.Controls.Menu.itemWidth+ dayWidth * selectedDay - 1, PC_part.SACK_pc_client.Controls.Menu.itemWidth+ dayWidth * day - 1);
-        selectionMotion.launch();
-        selectedDay=day;
+        if (day!=selectedDay) {
 
-        onItemSelected.accept(day);
+            selectionMotion.reconstruct(hideAndAppearTime, PC_part.SACK_pc_client.Controls.Menu.itemWidth + dayWidth * selectedDay - 1, PC_part.SACK_pc_client.Controls.Menu.itemWidth + dayWidth * day - 1);
+            selectionMotion.launch();
+            selectedDay = day;
+
+            onItemSelected.accept(day);
+        }
 
     }
 
@@ -56,6 +63,7 @@ public class WeekDaysPanel {
             if (y>= PC_part.SACK_pc_client.Controls.Menu.topMargin+ PC_part.SACK_pc_client.Controls.Menu.itemHeight && y<= PC_part.SACK_pc_client.Controls.Menu.topMargin+ PC_part.SACK_pc_client.Controls.Menu.itemHeight*2 && x>= PC_part.SACK_pc_client.Controls.Menu.itemWidth && x<= PC_part.SACK_pc_client.Controls.Menu.itemWidth+dayWidth * days.length) {
 
                 int xInd=(x- PC_part.SACK_pc_client.Controls.Menu.itemWidth)/dayWidth;
+
                 selectDay(xInd);
 
             }
@@ -64,10 +72,10 @@ public class WeekDaysPanel {
 
     private static final float hideAndAppearTime=0.4f;
 
-    private TimeFunction inMotion = new TimeFunction(hideAndAppearTime, -dayWidth * days.length + PC_part.SACK_pc_client.Controls.Menu.itemWidth, PC_part.SACK_pc_client.Controls.Menu.itemWidth);
-    private TimeFunction outMotion = new TimeFunction(hideAndAppearTime, PC_part.SACK_pc_client.Controls.Menu.itemWidth, -dayWidth * days.length + PC_part.SACK_pc_client.Controls.Menu.itemWidth);
+    private final TimeFunction inMotion = new TimeFunction(hideAndAppearTime, -dayWidth * days.length + PC_part.SACK_pc_client.Controls.Menu.itemWidth, PC_part.SACK_pc_client.Controls.Menu.itemWidth);
+    private final TimeFunction outMotion = new TimeFunction(hideAndAppearTime, PC_part.SACK_pc_client.Controls.Menu.itemWidth, -dayWidth * days.length + PC_part.SACK_pc_client.Controls.Menu.itemWidth);
 
-    private TimeFunction selectionMotion = new TimeFunction(hideAndAppearTime, 0, 0);
+    private final TimeFunction selectionMotion = new TimeFunction(hideAndAppearTime, 0, 0);
 
     private void drawItems(Graphics2D g2, State s, int additionX, int additionY) {
 
@@ -80,7 +88,7 @@ public class WeekDaysPanel {
 
         for (int i = 0; i < days.length; i++) {
             int x = additionX + dayWidth * i - 1;
-            g2.drawImage(s==State.selectable? Images.lightDoubleArrow :Images.darkDoubleArrow, x, additionY, null);
+            g2.drawImage(Images.lightDoubleArrow, x, additionY, null);
         }
 
         if (s==State.selectable) {
@@ -113,8 +121,8 @@ public class WeekDaysPanel {
         }
     }
 
-    public static final int textYDrawOffset = 35;
-    public static final int textXDrawOffset = 45;
+    private static final int textYDrawOffset = 35;
+    private static final int textXDrawOffset = 45;
     public static final int dayWidth = 108;
 
     public void draw(Graphics2D g2) {

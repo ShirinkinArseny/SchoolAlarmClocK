@@ -17,11 +17,24 @@ public class ConnectManager extends ActivityWithButtons<String> {
 
     public ConnectManager() {
 
-        super(Menu.topMargin+Menu.itemHeight+10);
+        super(Menu.topMargin + Menu.itemHeight + 10);
 
         addButton(this::reloadCheckboxes, Labels.updatePortsList);
 
-        addButton(() -> getSelectedItems().forEach(DataWrapper::connect), Labels.connectToSelected);
+        addButton(() -> {
+                    UICanvas.longOperationWaiter.lock();
+                    new Thread(() -> {
+                        getSelectedItems().forEach(DataWrapper::connect);
+                        DataWrapper.pingDuino();
+                        try {
+                            Thread.sleep(1500);//dirty hack for serial stabilisation
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        UICanvas.longOperationWaiter.unlock();
+                    }).start();
+                }, Labels.connectToSelected
+        );
 
         addButton(DataWrapper::disconnect, Labels.disconnect);
 
@@ -40,21 +53,21 @@ public class ConnectManager extends ActivityWithButtons<String> {
 
         g2.setFont(Design.fontSmall);
         g2.drawString(Labels.usablePorts, PC_part.SACK_pc_client.Controls.Menu.itemWidth + 45,
-                PC_part.SACK_pc_client.Controls.Menu.topMargin+Menu.itemHeight+20);
+                PC_part.SACK_pc_client.Controls.Menu.topMargin + Menu.itemHeight + 20);
 
-        if (portsNumber==0) {
+        if (portsNumber == 0) {
             g2.drawString(Labels.noUsablePorts, PC_part.SACK_pc_client.Controls.Menu.itemWidth + 45,
-                    PC_part.SACK_pc_client.Controls.Menu.topMargin+Menu.itemHeight+45);
+                    PC_part.SACK_pc_client.Controls.Menu.topMargin + Menu.itemHeight + 45);
         }
 
     }
 
-    private int portsNumber=0;
+    private int portsNumber = 0;
 
     @Override
     public void loadCheckBoxes() {
         String[] ports = DataWrapper.getPorts();
-        portsNumber=ports.length;
+        portsNumber = ports.length;
         for (String port : ports) {
             addCheckBox(port);
         }

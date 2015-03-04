@@ -18,7 +18,7 @@ import static PC_part.Common.Logger.logWarning;
 public class Main {
 
 
-    public static final String correctHTTPResponse200 = "HTTP/1.1 200 OK\n" +
+    private static final String correctHTTPResponse200 = "HTTP/1.1 200 OK\n" +
             "Content-Type: text/html\n" +
             "Connection: close"+loadLocal("Common.html");
 
@@ -29,8 +29,8 @@ public class Main {
 
     private static final Serial serial=new WiredSerial();
 
-    public static final String css = loadLocal("Style.css");
-    public static final String js = loadLocal("Scripts.js");
+    private static final String css = loadLocal("Style.css");
+    private static final String js = loadLocal("Scripts.js");
 
     public static void main(String[] args) throws Throwable {
 

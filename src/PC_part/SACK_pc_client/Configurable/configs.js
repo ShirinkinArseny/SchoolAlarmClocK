@@ -4,7 +4,7 @@ darkForegroundColor = 0x3296c3;
 lightFontColor = lightBackgroundColor;
 darkFontColor = 0x000000;
 
-drawShadows=0;
+drawShadows=1;
 shadowRadius=3;
 shadowOpacity=1;
 
@@ -68,3 +68,7 @@ wrongBytesNumber_6_or_8 = "неверное число байт адреса (ip
 tooBigByte = "одно из чисел слишком не байт";
 bigByte = "одно из чисел больше 256";
 wrongBytesNumber = "неверное число байт адреса";
+
+
+networkErrors="Какие-то косяки со связью, проверьте соединение попробуйте ещё раз.";
+cannotDisconnect="Не получилось, щито поделать дэсу";

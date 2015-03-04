@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-public class ContentUtils {
+class ContentUtils {
 
     /**
      * Reads the file in current jar-archive (or classpath)
@@ -29,32 +29,6 @@ public class ContentUtils {
             e.printStackTrace();
         }
         return code;
-    }
-
-    /**
-     * Reads the file in current jar-archive (or classpath)
-     * Faster than reading string
-     *
-     * @param f Name of file (in same directory with this class)
-     * @return file containment as byte array
-     */
-    public static byte[] readFileByteArray(String f) {
-        InputStream in = ContentUtils.class.getResourceAsStream(f);
-        ArrayList<Byte> bytes = new ArrayList<>();
-        byte[] c = new byte[1024];
-        int count;
-        try {
-            while ((count = in.read(c)) != -1) {
-                for (int i = 0; i < count; i++)
-                    bytes.add(c[i]);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        byte[] byteArray = new byte[bytes.size()];
-        for (int i = 0; i < bytes.size(); i++)
-            byteArray[i] = bytes.get(i);
-        return byteArray;
     }
 
 }

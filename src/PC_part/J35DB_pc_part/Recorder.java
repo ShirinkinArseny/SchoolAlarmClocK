@@ -7,7 +7,7 @@ public class Recorder extends Thread {
     private TargetDataLine line;
     private AudioInputStream inputStream;
 
-    public Recorder() {
+    private Recorder() {
         try {
             AudioFormat audioFormat = new AudioFormat(
                     AudioFormat.Encoding.PCM_SIGNED,
@@ -21,7 +21,7 @@ public class Recorder extends Thread {
         }
     }
 
-    public void startRecording() {
+    private void startRecording() {
         this.line.start();
         start();
     }
@@ -42,8 +42,8 @@ public class Recorder extends Thread {
         //else System.err.println("ERROR: unknown bit sequence" + Arrays.toString(data)+" (normal if *duino connected just right now)");
     }
 
-    int pos=-1;
-    int[] data=new int[]{-1, -1, -1, -1, -1, -1, -1, -1};
+    private int pos=-1;
+    private final int[] data=new int[]{-1, -1, -1, -1, -1, -1, -1, -1};
     private void processBit(boolean value) {
         //System.out.println(System.currentTimeMillis()+" : get bit : "+value+" ");
 

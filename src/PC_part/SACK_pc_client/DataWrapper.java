@@ -188,6 +188,12 @@ public class DataWrapper {
         serial.talkWithDuino(Serial.Action.SetTime, new java.text.SimpleDateFormat("HH:mm:ss:dd:MM:yyyy").format(new java.util.Date()));
     }
 
+    public static void pingDuino() {
+        serial.initConnection();
+        serial.request("2");
+        serial.closeConnection();
+    }
+
     public static int getDuinoTime() {
         String val=serial.talkWithDuino(Serial.Action.RequestTime, null);
 

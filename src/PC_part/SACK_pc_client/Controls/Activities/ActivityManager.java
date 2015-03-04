@@ -11,7 +11,7 @@ public class ActivityManager implements Activity {
 
     private Activity currentActivity;
 
-    private TimeFunction newActivityY =new TimeFunction(Design.activityChangeTime, -UICanvas.windowHeight, 0);
+    private final TimeFunction newActivityY =new TimeFunction(Design.activityChangeTime, -UICanvas.windowHeight, 0);
 
     public ActivityManager() {
         currentActivity=new Activity() {
@@ -42,10 +42,10 @@ public class ActivityManager implements Activity {
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
     }
 
-    private BufferedImage oldRender;
-    private BufferedImage newRender;
-    private Graphics2D oldG;
-    private Graphics2D newG;
+    private final BufferedImage oldRender;
+    private final BufferedImage newRender;
+    private final Graphics2D oldG;
+    private final Graphics2D newG;
 
     public void setActivity(Activity a) {
         currentActivity.draw(oldG);

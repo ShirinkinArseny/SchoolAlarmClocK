@@ -48,7 +48,7 @@ public class Ring {
         return time/3600f;
     }
 
-    public String getHumanTime() {
+    private String getHumanTime() {
         return getHumanTime(time);
     }
 

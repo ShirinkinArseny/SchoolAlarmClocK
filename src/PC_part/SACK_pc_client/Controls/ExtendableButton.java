@@ -7,15 +7,16 @@ import java.awt.*;
 
 public class ExtendableButton {
 
-    private int x;
-    private int x2;
-    private int y, y2;
-    private int w;
-    private int h;
+    private final int x;
+    private final int x2;
+    private final int y;
+    private final int y2;
+    private final int w;
+    private final int h;
 
-    private String text;
+    private final String text;
 
-    private Runnable onclick;
+    private final Runnable onclick;
 
     public ExtendableButton(Runnable onclick, String text, int x, int y, int w, int h) {
         this.onclick = onclick;
@@ -28,7 +29,7 @@ public class ExtendableButton {
         this.text=text;
     }
 
-    public boolean getContains(int x, int y) {
+    private boolean getContains(int x, int y) {
         return x>=this.x && x<=this.x2 && y>=this.y && y<=this.y2;
     }
 

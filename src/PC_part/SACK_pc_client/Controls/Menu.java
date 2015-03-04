@@ -10,21 +10,21 @@ import java.util.function.Consumer;
 public class Menu implements Activity {
 
 
-    private String[] menuItems;
+    private final String[] menuItems;
 
     private int selectedMenuItem = 0;
     private int lastSelectedMenuItem = 0;
     private boolean fullySelected = true;
 
-    private Consumer<Integer> newItemSelected;
+    private final Consumer<Integer> newItemSelected;
 
-    private TimeFunction inMotion;
-    private TimeFunction outMotion;
+    private final TimeFunction inMotion;
+    private final TimeFunction outMotion;
 
     private static final float hideAndAppearTime=0.3f;
 
     public Menu(String[] items, Consumer<Integer> newItemSelected) {
-        float imageWidth = Images.darkArrow.getWidth();
+        float imageWidth = Images.bigArrow.getWidth();
         inMotion=new TimeFunction(hideAndAppearTime, -imageWidth, 0);
         outMotion=new TimeFunction(hideAndAppearTime, 0, -imageWidth);
         menuItems=items;
@@ -42,7 +42,7 @@ public class Menu implements Activity {
         }
     }
 
-    public void selectMenuItem(int index) {
+    private void selectMenuItem(int index) {
         if (index!=selectedMenuItem) {
             reselectMenuItem(index);
         }
@@ -70,8 +70,8 @@ public class Menu implements Activity {
     public static final int topMargin=30;
     public static final int itemHeight=50;
     public static final int itemWidth=225;
-    public static final int textXDrawOffset =20;
-    public static final int textYDrawOffset =35;
+    private static final int textXDrawOffset =20;
+    private static final int textYDrawOffset =35;
     public void draw(Graphics2D g2) {g2.setColor(Design.lightForegroundColor);
         g2.fillRect(0, 0, itemWidth, UICanvas.windowHeight);
 
@@ -85,30 +85,30 @@ public class Menu implements Activity {
         g2.setColor(Design.darkForegroundColor);
         if (fullySelected) {
             if (Design.drawShadows)
-            g2.drawImage(Images.darkArrowShadowed,
+            g2.drawImage(Images.bigArrowShadow,
                     -Design.shadowRadius,
                     topMargin + selectedMenuItem * itemHeight-Design.shadowRadius,
                     null);
-            g2.drawImage(Images.darkArrow, 0, topMargin + selectedMenuItem * itemHeight, null);
+            g2.drawImage(Images.bigArrow, 0, topMargin + selectedMenuItem * itemHeight, null);
         } else {
 
 
             if (Design.drawShadows) {
-                g2.drawImage(Images.darkArrowShadowed,
+                g2.drawImage(Images.bigArrowShadow,
                         (int) (outMotion.get2SpeedUpValue()) - Design.shadowRadius,
                         topMargin + lastSelectedMenuItem * itemHeight - Design.shadowRadius,
                         null);
 
 
-                g2.drawImage(Images.darkArrowShadowed,
+                g2.drawImage(Images.bigArrowShadow,
                         (int) (inMotion.get2SpeedDownValue()) - Design.shadowRadius,
                         topMargin + selectedMenuItem * itemHeight - Design.shadowRadius,
                         null);
             }
 
-            g2.drawImage(Images.darkArrow, (int)(outMotion.get2SpeedUpValue()),
+            g2.drawImage(Images.bigArrow, (int)(outMotion.get2SpeedUpValue()),
                     topMargin + lastSelectedMenuItem * itemHeight, null);
-            g2.drawImage(Images.darkArrow, (int) (inMotion.get2SpeedDownValue()),
+            g2.drawImage(Images.bigArrow, (int) (inMotion.get2SpeedDownValue()),
                     topMargin + selectedMenuItem * itemHeight, null);
         }
 

@@ -16,11 +16,11 @@ public class UICanvas extends Canvas {
 
     public static final LongOperationWaiter longOperationWaiter=new LongOperationWaiter();
 
-    private static ActivityManager activityManager=new ActivityManager();
+    private static final ActivityManager activityManager=new ActivityManager();
 
-    private static WeekDaysPanel weekDaysPanel=new WeekDaysPanel(date -> activityManager.setActivity(new TimeTable(date)));
+    private static final WeekDaysPanel weekDaysPanel=new WeekDaysPanel(date -> activityManager.setActivity(new TimeTable(date)));
 
-    private static PC_part.SACK_pc_client.Controls.Menu menu=new PC_part.SACK_pc_client.Controls.Menu(
+    private static final PC_part.SACK_pc_client.Controls.Menu menu=new PC_part.SACK_pc_client.Controls.Menu(
             new String[]{Labels.chart, Labels.table, Labels.timeSync, Labels.connection, Labels.exit},
             (i) -> {
                 switch (i) {
@@ -31,7 +31,7 @@ public class UICanvas extends Canvas {
                     }
                     case 1: {
                         weekDaysPanel.setState(WeekDaysPanel.State.selectable);
-                        activityManager.setActivity(new TimeTable(0));
+                        activityManager.setActivity(new TimeTable(weekDaysPanel.getLastSelectedDay()));
                         break;
                     }
                     case 2: {
@@ -87,15 +87,12 @@ public class UICanvas extends Canvas {
     }
 
 
-    long nanoTime = System.nanoTime();
     public void start() {
         createBufferStrategy(3);
         bs = getBufferStrategy();
         new Timer(20, e -> {
-            long currentNanoTime = System.nanoTime();
             update();
             draw();
-            nanoTime = currentNanoTime;
         }).start();
     }
 

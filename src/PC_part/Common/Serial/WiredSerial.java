@@ -1,6 +1,7 @@
 package PC_part.Common.Serial;
 
 import PC_part.Common.Logger;
+import PC_part.SACK_pc_client.Configurable.Labels;
 import PC_part.SACK_pc_client.DataWrapper;
 import jssc.SerialPort;
 import jssc.SerialPortException;
@@ -10,11 +11,11 @@ public class WiredSerial extends Serial {
     private static SerialPort serialPort;
 
     @Override
-    void initConnection() {
+    public void initConnection() {
     }
 
     @Override
-    void closeConnection() {
+    public void closeConnection() {
     }
 
     @Override
@@ -87,7 +88,7 @@ public class WiredSerial extends Serial {
             Logger.logInfo("WiredSerial", "Disconnected from serial");
         } catch (SerialPortException e) {
             Logger.logError("WiredSerial", "Can't disconnect from serial, cuz " + e.toString());
-            DataWrapper.processError("Не получилось, щито поделать дэсу");
+            DataWrapper.processError(Labels.cannotDisconnect);
         }
         connected=false;
     }

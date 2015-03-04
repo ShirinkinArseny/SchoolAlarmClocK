@@ -8,14 +8,18 @@
 
 #define RINGS_DATABLOCK_START 512
 
-#ifdef USE_EXTERNAL_EEPROM
+#define readByte(address) EEPROM.read(address)
+#define writeByte(address, value) EEPROM.write(address, value)
+
+
+/*#ifdef USE_EXTERNAL_EEPROM
 #include "ExtEEPROM.h"
 #define readByte(address) readEEPROM(address)
-#define writeByte(address,value) writeEEPROM(address,value)
+#define writeByte(address,value) writeEEPROM(address, value)
 #else //In case of internal
 #define readByte(address) EEPROM.read(address)
-#define writeByte(address, value) EEPROM.write(address.value)
-#endif  //USE_EXTERNAL_EEPROM
+#define writeByte(address, value) EEPROM.write(address, value)
+#endif  //USE_EXTERNAL_EEPROM*/
 
 
 Ring::Ring (uint16_t memoryRepresentation) {
@@ -67,7 +71,7 @@ boolean Ring::isEmpty() {
 }
 
 void Ring::writeToEEPROM(byte index) {
-  byte doubled=index*2;
+  int doubled=index*2;
   writeByte(RINGS_DATABLOCK_START+doubled, Ring::memoryRepresentation/256);
   writeByte(RINGS_DATABLOCK_START+doubled+1, Ring::memoryRepresentation%256);
 }

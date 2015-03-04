@@ -197,6 +197,12 @@ include .build/uno/src/J35DL.d
 	@/usr/bin/avr-g++ -mmcu=atmega328p -DF_CPU=16000000L -DARDUINO=105 -I/usr/share/arduino/hardware/arduino/cores/arduino -ffunction-sections -fdata-sections -g -Os -w -I/usr/share/arduino/hardware/arduino/variants/standard -I/usr/share/arduino/libraries/EEPROM -I/usr/share/arduino/hardware/arduino/cores/arduino -I/usr/share/arduino/hardware/arduino/cores/arduino/avr-libc -fno-exceptions  -o $@ -c src/Time.cpp
 include .build/uno/src/Time.d
 
+.build/uno/src/ExtEEPROM.o : src/ExtEEPROM.cpp
+	@echo src/ExtEEPROM.cpp
+	@mkdir -p .build/uno/src
+	@/usr/bin/avr-g++ -mmcu=atmega328p -DF_CPU=16000000L -DARDUINO=105 -I/usr/share/arduino/hardware/arduino/cores/arduino -ffunction-sections -fdata-sections -g -Os -w -I/usr/share/arduino/hardware/arduino/variants/standard -I/usr/share/arduino/libraries/EEPROM -I/usr/share/arduino/hardware/arduino/cores/arduino -I/usr/share/arduino/hardware/arduino/cores/arduino/avr-libc -fno-exceptions  -o $@ -c src/ExtEEPROM.cpp
+include .build/uno/src/ExtEEPROM.d
+
 .build/uno/src/Ring.o : src/Ring.cpp
 	@echo src/Ring.cpp
 	@mkdir -p .build/uno/src
@@ -221,7 +227,7 @@ include .build/uno/src/sketch.d
 
 
 
-.build/uno/firmware.elf : .build/uno/src/J35DL.o .build/uno/src/Time.o .build/uno/src/Ring.o .build/uno/src/RingKeeper.o .build/uno/src/sketch.o .build/uno/EEPROM/libEEPROM.a .build/uno/arduino/libarduino.a
+.build/uno/firmware.elf : .build/uno/src/J35DL.o .build/uno/src/Time.o .build/uno/src/ExtEEPROM.o .build/uno/src/Ring.o .build/uno/src/RingKeeper.o .build/uno/src/sketch.o .build/uno/EEPROM/libEEPROM.a .build/uno/arduino/libarduino.a
 	@echo Linking firmware.elf
 	@/usr/bin/avr-gcc -mmcu=atmega328p -Wl,-Os -Wl,--gc-sections -o $@ $^ -lm
 
