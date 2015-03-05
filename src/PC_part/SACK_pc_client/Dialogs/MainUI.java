@@ -1,16 +1,44 @@
 package PC_part.SACK_pc_client.Dialogs;
 
+import PC_part.SACK_pc_client.Configurable.Design;
 import PC_part.SACK_pc_client.DataWrapper;
 import PC_part.SACK_pc_client.Controls.UICanvas;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.awt.event.*;
+import java.util.Arrays;
 
 public class MainUI extends JFrame {
     private JPanel contentPane;
+
+    public MainUI() {
+        setContentPane(contentPane);
+
+        setUndecorated(!Design.windowBoarders);
+
+        DataWrapper.init();
+        UICanvas uic = new UICanvas();
+
+        contentPane.add(uic);
+
+        if (Design.dragWindow)
+            setUpDraggingWindow(uic);
+
+
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setSize(1100, 700);
+
+        setResizable(Design.resizableWindow);
+
+        if (Design.resizableWindow)
+            setUpResizingWindow();
+
+        setVisible(true);
+
+
+        uic.start();
+    }
 
     private void setUpDraggingWindow(Component c) {
         final int[] mouseDownX = {0};
@@ -26,7 +54,7 @@ public class MainUI extends JFrame {
             public void mousePressed(MouseEvent e) {
                 mouseDownX[0] = e.getXOnScreen();
                 mouseDownY[0] = e.getYOnScreen();
-                mouseDownWindowLocation[0] =getLocation();
+                mouseDownWindowLocation[0] = getLocation();
             }
 
             @Override
@@ -47,7 +75,7 @@ public class MainUI extends JFrame {
         c.addMouseMotionListener(new MouseMotionListener() {
             @Override
             public void mouseDragged(MouseEvent e) {
-                if (mouseDownWindowLocation[0]!=null) {
+                if (mouseDownWindowLocation[0] != null) {
                     setLocation(
                             mouseDownWindowLocation[0].x + e.getXOnScreen() - mouseDownX[0],
                             mouseDownWindowLocation[0].y + e.getYOnScreen() - mouseDownY[0]
@@ -62,26 +90,31 @@ public class MainUI extends JFrame {
         });
     }
 
-    public MainUI() {
-        setContentPane(contentPane);
+    private void setUpResizingWindow() {
 
-        setUndecorated(true);
+        addComponentListener(new ComponentListener() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                UICanvas.windowWidth=getWidth();
+                UICanvas.windowHeight=getHeight();
+            }
 
-        DataWrapper.init();
-        UICanvas uic=new UICanvas();
+            @Override
+            public void componentMoved(ComponentEvent e) {
 
-        contentPane.add(uic);
-        setUpDraggingWindow(uic);
+            }
 
+            @Override
+            public void componentShown(ComponentEvent e) {
 
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setSize(1100, 700);
-        setResizable(false);
-        setVisible(true);
+            }
 
+            @Override
+            public void componentHidden(ComponentEvent e) {
 
+            }
+        });
 
-        uic.start();
     }
 
     public static void main(String[] args) {

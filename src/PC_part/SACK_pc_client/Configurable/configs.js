@@ -10,10 +10,18 @@ shadowOpacity=1;
 
 activityChangeTime=0.6;
 
+windowBoarders=0;
+dragWindow=1;
+resizableWindow=0;
+
+bigFontName="Fira Sans Thin";
+bigFontSize=35;
+smallFontName="Fira Sans Thin";
+smallFontSize=20;
 
 updatePortsList = "ОБНОВИТЬ СПИСОК ПОРТОВ";
 connectToSelected = "СОЕДИНИТЬСЯ С ЭТИМ";
-disconnect = "ОТСОЕДИНИТЬСЯ";
+disconnect = "ОТКЛЮЧИТЬ";
 network = "ВАЙ-ФАЙ?";
 usablePorts = "Доступные порты:";
 noUsablePorts = "А нету доступных портов ~_~";
@@ -32,10 +40,10 @@ duinoTime = "Время на дуине:";
 localTime = "Местное время:";
 
 addOneMoreRing = "ДОБАВИТЬ ЕЩЁ ОДИН";
-removeSelected = "УДАЛИТЬ ВЫДЕЛЕННЫЕ";
-copySelected = "КОПИРОВАТЬ ВЫДЕЛЕННЫЕ";
-insert = "ВСТАВИТЬ";
-dropSelection = "СБРОСИТЬ ВЫДЕЛЕНИЕ";
+removeSelected = "УДАЛИТЬ";
+copySelected = "КОПИРОВАТЬ";
+insert = "ВСТАВИТЬ КОПИЮ";
+dropSelection = "СБРОСИТЬ";
 getRingsFromDuino = "ВЗЯТЬ С ДУИНЫ";
 writeRingsToDuino = "ЗАЛИТЬ ВСЁ НА ДУИНУ";
 
@@ -65,7 +73,7 @@ niceIP = "Хороший, годный ip";
 emptyIP = "Пусто жеж";
 wrongCharactersInLine = "какие-то левые символы в адресе";
 wrongBytesNumber_6_or_8 = "неверное число байт адреса (ipv6 не нужен)";
-tooBigByte = "одно из чисел слишком не байт";
+tooBigByte = "одно из чисел слишком больше 256";
 bigByte = "одно из чисел больше 256";
 wrongBytesNumber = "неверное число байт адреса";
 

@@ -19,8 +19,10 @@ public class Design {
     public static final Color darkFontColor =
             new Color(ConfigsReader.getIntValue("darkFontColor"));
 
-    public static final Font font = new Font("Fira Sans Thin", Font.PLAIN, 35);
-    public static final Font fontSmall = new Font("Fira Sans Thin", Font.PLAIN, 20);
+    public static final Font font = new Font(ConfigsReader.getStringValue("bigFontName"),
+            Font.PLAIN, ConfigsReader.getIntValue("bigFontSize"));
+    public static final Font fontSmall = new Font(ConfigsReader.getStringValue("smallFontName"),
+            Font.PLAIN, ConfigsReader.getIntValue("smallFontSize"));
 
     public static final Stroke fat = new BasicStroke(3);
 
@@ -35,4 +37,13 @@ public class Design {
 
     public static final float activityChangeTime =
             ConfigsReader.getFloatValue("activityChangeTime");
+
+    public static final boolean windowBoarders =
+            ConfigsReader.getIntValue("windowBoarders")==1;
+
+    public static final boolean dragWindow =
+            ConfigsReader.getIntValue("dragWindow")==1;
+
+    public static final boolean resizableWindow =
+            ConfigsReader.getIntValue("resizableWindow")==1;
 }

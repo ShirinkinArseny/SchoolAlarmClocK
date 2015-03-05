@@ -1,24 +1,44 @@
 package PC_part.SACK_pc_client.Controls;
 
 import PC_part.SACK_pc_client.Configurable.Design;
+import PC_part.SACK_pc_client.Configurable.Labels;
+import PC_part.SACK_pc_client.DataWrapper;
 
 import java.awt.*;
 
 public class LongOperationWaiter {
+
+
+    public void processIfConnected(Runnable r) {
+        if (DataWrapper.getIsConnected()) {
+            processOperation(r);
+        } else {
+            DataWrapper.processError(Labels.cannotPerformOperationCuzNoConnection);
+        }
+    }
+
+    public void processOperation(Runnable r) {
+        lock();
+        new Thread(() -> {
+            r.run();
+            unlock();
+        }).start();
+    }
 
     private final TimeFunction in=new TimeFunction(0.3f, 0, 255);
     private final TimeFunction out=new TimeFunction(0.3f, 255, 0);
 
     private boolean locked=false;
 
-    public void lock() {
+    private void lock() {
         if (!locked) {
+            setUpCircleCenters();
             in.launch();
             locked = true;
         }
     }
 
-    public void unlock() {
+    private void unlock() {
         out.launch();
         locked=false;
     }
@@ -33,12 +53,20 @@ public class LongOperationWaiter {
     private final TimeFunction roll=new TimeFunction(0.8f, 0, 360);
 
     private static final int diameter=90;
-    private static final int rollX=(UICanvas.windowWidth-Menu.itemWidth)/2+Menu.itemWidth-diameter/2;
-    private static final int rollY=UICanvas.windowHeight/2-diameter/2;
+    private static int rollX;
+    private static int rollY;
 
     private static final int diameterBackground=110;
-    private static final int rollXBackground=(UICanvas.windowWidth-Menu.itemWidth)/2+Menu.itemWidth-diameterBackground/2;
-    private static final int rollYBackground=UICanvas.windowHeight/2-diameterBackground/2;
+    private static int rollXBackground;
+    private static int rollYBackground;
+
+    private void setUpCircleCenters() {
+        rollX=(UICanvas.windowWidth-Menu.itemWidth)/2+Menu.itemWidth-diameter/2;
+        rollY=UICanvas.windowHeight/2-diameter/2;
+        rollXBackground=(UICanvas.windowWidth-Menu.itemWidth)/2+Menu.itemWidth-diameterBackground/2;
+        rollYBackground=UICanvas.windowHeight/2-diameterBackground/2;
+
+    }
 
     public void draw(Graphics2D g2) {
 

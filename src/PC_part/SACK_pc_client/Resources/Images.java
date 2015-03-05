@@ -14,6 +14,9 @@ public class Images {
     public static final BufferedImage bigBackArrow=
             multiplyToColor(loadImage("BigBackArrow.png"), Design.lightForegroundColor);
 
+    public static final BufferedImage bigBackDoubleArrow=
+            multiplyToColor(loadImage("BigDoubleBackArrow.png"), Design.lightForegroundColor);
+
     public static final BufferedImage backArrow=
             multiplyToColor(loadImage("BackArrow.png"), Design.lightForegroundColor);
 
@@ -36,6 +39,7 @@ public class Images {
             getShadowed(getBlackRect(Menu.itemWidth, UICanvas.windowHeight));
 
     public static final BufferedImage doubleArrowShadowed = getShadowed(darkDoubleArrow);
+    public static final BufferedImage bigBackDoubleArrowShadowed = getShadowed(bigBackDoubleArrow);
     public static final BufferedImage bigArrowShadow = getShadowed(bigArrow);
 
     private static BufferedImage getBlackRect(int w, int h) {

@@ -14,41 +14,23 @@ public class TimeSync extends ActivityWithButtons {
 
     private int time=-1;
 
-    private void syncTime() {
-        if (DataWrapper.getIsConnected()) {
-
-            UICanvas.longOperationWaiter.lock();
-            new Thread(() -> {
+    private void getTimeFromDuino() {
                 time = DataWrapper.getDuinoTime();
-                UICanvas.longOperationWaiter.unlock();
-            }).start();
-        } else {
-            DataWrapper.processError(Labels.cannotPerformOperationCuzNoConnection);
-        }
+    }
+
+    private void writeLocalTimeToDuino() {
+        DataWrapper.setTime();
+        getTimeFromDuino();
     }
 
     public TimeSync() {
         super(0);
 
-        addButton(this::syncTime, Labels.getTimeFromDuino);
-        addButton(() -> {
-            if (DataWrapper.getIsConnected()) {
-
-
-                UICanvas.longOperationWaiter.lock();
-                new Thread(() -> {
-                    DataWrapper.setTime();
-                    syncTime();
-                    UICanvas.longOperationWaiter.unlock();
-                }).start();
-
-            } else {
-                DataWrapper.processError(Labels.cannotPerformOperationCuzNoConnection);
-            }
-        }, Labels.writeLocalTime);
+        addButton(() -> UICanvas.longOperationWaiter.processIfConnected(this::getTimeFromDuino), Labels.getTimeFromDuino);
+        addButton(() -> UICanvas.longOperationWaiter.processIfConnected(this::writeLocalTimeToDuino), Labels.writeLocalTime);
 
         if (DataWrapper.getIsConnected()) {
-            new Thread(this::syncTime).start();
+            UICanvas.longOperationWaiter.processOperation(this::getTimeFromDuino);
         }
     }
 

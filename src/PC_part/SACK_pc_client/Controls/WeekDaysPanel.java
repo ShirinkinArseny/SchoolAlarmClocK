@@ -116,7 +116,7 @@ public class WeekDaysPanel {
 
         for (int i = 0; i < days.length; i++) {
             int x = additionX + dayWidth * i - 1;
-            g2.setColor(s==State.nonSelectable||i==selectedDay? Design.lightFontColor: Design.darkFontColor);
+            g2.setColor(i==selectedDay&&s== State.selectable? Design.lightFontColor: Design.darkFontColor);
             g2.drawString(days[i], x + textXDrawOffset,  additionY + textYDrawOffset);
         }
     }

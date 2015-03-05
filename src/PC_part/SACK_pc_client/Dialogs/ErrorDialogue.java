@@ -1,5 +1,7 @@
 package PC_part.SACK_pc_client.Dialogs;
 
+import PC_part.SACK_pc_client.Controls.UICanvas;
+
 import javax.swing.*;
 import java.awt.event.*;
 
@@ -25,7 +27,10 @@ public class ErrorDialogue extends JDialog {
         errorText.setText(text);
 
         contentPane.registerKeyboardAction(e -> dispose(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-        pack();
+
+        setSize(400, 200);
+        setLocation(UICanvas.clickX - 200, UICanvas.clickY - 100);
+
         setVisible(true);
     }
 

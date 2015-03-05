@@ -1,6 +1,7 @@
 package PC_part.SACK_pc_client.Dialogs;
 
 import PC_part.SACK_pc_client.Configurable.Labels;
+import PC_part.SACK_pc_client.Controls.UICanvas;
 
 import javax.swing.*;
 import java.awt.*;
@@ -109,6 +110,7 @@ public class AddRingDialogue extends JDialog {
         input.setText(""); updateTime();
 
         setSize(400, 200);
+        setLocation(UICanvas.clickX-200, UICanvas.clickY-100);
 
         setVisible(true);
     }

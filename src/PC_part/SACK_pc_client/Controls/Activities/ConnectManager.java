@@ -2,45 +2,52 @@ package PC_part.SACK_pc_client.Controls.Activities;
 
 import PC_part.SACK_pc_client.Configurable.Design;
 import PC_part.SACK_pc_client.Configurable.Labels;
+import PC_part.SACK_pc_client.Controls.ConditionedButtonPanel;
 import PC_part.SACK_pc_client.Controls.UICanvas;
 import PC_part.SACK_pc_client.DataWrapper;
 import PC_part.SACK_pc_client.Controls.Menu;
 import PC_part.SACK_pc_client.Dialogs.IPAddressREquestDialogue;
 
 import java.awt.*;
+import java.util.function.Supplier;
 
 public class ConnectManager extends ActivityWithButtons<String> {
-
-    private void tryWiFi() {
-        new IPAddressREquestDialogue(DataWrapper::connect);
-    }
 
     public ConnectManager() {
 
         super(Menu.topMargin + Menu.itemHeight + 10);
 
+        setConditionedButtonPanel(new ConditionedButtonPanel(
+                new Runnable[]{DataWrapper::disconnect},
+                new String[]{Labels.disconnect},
+                DataWrapper::getIsConnected
+        ));
+
         addButton(this::reloadCheckboxes, Labels.updatePortsList);
 
-        addButton(() -> {
-                    UICanvas.longOperationWaiter.lock();
-                    new Thread(() -> {
-                        getSelectedItems().forEach(DataWrapper::connect);
-                        DataWrapper.pingDuino();
-                        try {
-                            Thread.sleep(1500);//dirty hack for serial stabilisation
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        UICanvas.longOperationWaiter.unlock();
-                    }).start();
-                }, Labels.connectToSelected
-        );
-
-        addButton(DataWrapper::disconnect, Labels.disconnect);
+        addButton(this::connect, Labels.connectToSelected);
 
         addButton(this::tryWiFi, Labels.network);
 
         reloadCheckboxes();
+    }
+
+    private void tryWiFi() {
+        new IPAddressREquestDialogue(DataWrapper::connect);
+    }
+
+    private void connect() {
+        if (getSelectedItemsExists()) {
+            UICanvas.longOperationWaiter.processOperation(() -> {
+                getSelectedItems().forEach(DataWrapper::connect);
+                DataWrapper.pingDuino();
+                try {
+                    Thread.sleep(1500);//dirty hack for serial stabilisation
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
     }
 
     @Override

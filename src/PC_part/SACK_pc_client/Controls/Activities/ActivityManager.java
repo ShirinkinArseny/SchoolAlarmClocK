@@ -13,13 +13,7 @@ public class ActivityManager implements Activity {
 
     private final TimeFunction newActivityY =new TimeFunction(Design.activityChangeTime, -UICanvas.windowHeight, 0);
 
-    public ActivityManager() {
-        currentActivity=new Activity() {
-            public void draw(Graphics2D g2) {
-            }
-            public void mouseClick(int x, int y) {
-            }
-        };
+    private void setUpLayers() {
         oldRender=new BufferedImage(UICanvas.windowWidth, UICanvas.windowHeight, BufferedImage.TYPE_3BYTE_BGR);
         newRender=new BufferedImage(UICanvas.windowWidth, UICanvas.windowHeight, BufferedImage.TYPE_3BYTE_BGR);
 
@@ -42,12 +36,24 @@ public class ActivityManager implements Activity {
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
     }
 
-    private final BufferedImage oldRender;
-    private final BufferedImage newRender;
-    private final Graphics2D oldG;
-    private final Graphics2D newG;
+    public ActivityManager() {
+        currentActivity=new Activity() {
+            public void draw(Graphics2D g2) {
+            }
+            public void mouseClick(int x, int y) {
+            }
+        };
+        setUpLayers();
+    }
+
+    private BufferedImage oldRender;
+    private BufferedImage newRender;
+    private Graphics2D oldG;
+    private Graphics2D newG;
 
     public void setActivity(Activity a) {
+        if (newRender.getWidth()!=UICanvas.windowWidth)
+            setUpLayers();
         currentActivity.draw(oldG);
         currentActivity=a;
         newActivityY.launch();

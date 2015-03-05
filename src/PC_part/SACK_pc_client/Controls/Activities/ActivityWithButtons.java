@@ -1,6 +1,7 @@
 package PC_part.SACK_pc_client.Controls.Activities;
 
 import PC_part.SACK_pc_client.Configurable.Design;
+import PC_part.SACK_pc_client.Controls.ConditionedButtonPanel;
 import PC_part.SACK_pc_client.Controls.ExtendableButton;
 import PC_part.SACK_pc_client.Controls.ExtendableCheckbox;
 import PC_part.SACK_pc_client.Controls.UICanvas;
@@ -15,19 +16,30 @@ public abstract class ActivityWithButtons<T> implements Activity {
     private final ArrayList<ExtendableButton> actions=new ArrayList<>();
     private final ArrayList<ExtendableCheckbox<T>> checkboxes = new ArrayList<>();
     private final int checkBoxesYOffset;
+    private int selectedItemsNumber=0;
+
+    public boolean getSelectedItemsExists() {
+        return selectedItemsNumber!=0;
+    }
+
+    private ConditionedButtonPanel cbt=null;
+
+            public void setConditionedButtonPanel(ConditionedButtonPanel cbt ) {
+                this.cbt=cbt;
+            }
 
     ActivityWithButtons(int checkBoxesYOffset) {
         this.checkBoxesYOffset = checkBoxesYOffset;
         reloadCheckboxes();
     }
 
-    private static final int timeMarkXPos= UICanvas.windowWidth- Images.bigBackArrow.getWidth();
     void addButton(Runnable r, String title) {
         int w= Images.bigBackArrow.getWidth();
         int h=Images.bigBackArrow.getHeight();
+        int timeMarkXPos= UICanvas.windowWidth- Images.bigBackArrow.getWidth();
 
         actions.add(new ExtendableButton(r, title, timeMarkXPos,
-                PC_part.SACK_pc_client.Controls.Menu.topMargin + (2 + actions.size()) * (PC_part.SACK_pc_client.Controls.Menu.itemHeight + 20),
+                PC_part.SACK_pc_client.Controls.Menu.topMargin + (2 + actions.size()) * (PC_part.SACK_pc_client.Controls.Menu.itemHeight + 10),
                 w, h));
     }
 
@@ -42,6 +54,7 @@ public abstract class ActivityWithButtons<T> implements Activity {
     void reloadCheckboxes() {
         checkboxes.clear();
         loadCheckBoxes();
+        updateSelectedItemsNumber();
     }
 
     Stream<T> getSelectedItems() {
@@ -58,14 +71,25 @@ public abstract class ActivityWithButtons<T> implements Activity {
 
     void dropSelection() {
         checkboxes.stream().filter(ExtendableCheckbox::getSelected).forEach(ExtendableCheckbox::unselect);
+        updateSelectedItemsNumber();
+    }
+
+    private void updateSelectedItemsNumber() {
+        selectedItemsNumber=0;
+        checkboxes.stream().filter(ExtendableCheckbox::getSelected).forEach(rect -> selectedItemsNumber++);
+
     }
 
     public void mouseClick(int x, int y) {
+        for (ExtendableButton eb: actions)
+            eb.click(x, y);
         for (ExtendableCheckbox<T> rect : checkboxes) {
             rect.click(x, y);
         }
-        for (ExtendableButton eb: actions)
-            eb.click(x, y);
+        updateSelectedItemsNumber();
+        if (cbt!=null)
+            cbt.mouseClick(x, y);
+
     }
 
 
@@ -80,6 +104,11 @@ public abstract class ActivityWithButtons<T> implements Activity {
 
         for (ExtendableButton eb: actions)
             eb.draw(g2);
+
+
+        if (cbt!=null)
+            cbt.draw(g2);
+
         UICanvas.longOperationWaiter.draw(g2);
     }
 

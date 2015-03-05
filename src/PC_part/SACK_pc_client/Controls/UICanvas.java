@@ -11,8 +11,10 @@ import java.awt.image.BufferStrategy;
 
 public class UICanvas extends Canvas {
 
-    public static final int windowWidth=1100;
-    public static final int windowHeight=700;
+    public static int windowWidth=1100;
+    public static int windowHeight=700;
+
+    public static int clickX, clickY;
 
     public static final LongOperationWaiter longOperationWaiter=new LongOperationWaiter();
 
@@ -58,6 +60,8 @@ public class UICanvas extends Canvas {
         addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                clickX=e.getXOnScreen();
+                clickY=e.getYOnScreen();
                 menu.mouseClick(e.getX(), e.getY());
                 weekDaysPanel.mouseClick(e.getX(), e.getY());
                 activityManager.mouseClick(e.getX(), e.getY());
