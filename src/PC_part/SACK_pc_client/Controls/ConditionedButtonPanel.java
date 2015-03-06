@@ -84,6 +84,13 @@ public class ConditionedButtonPanel {
     public void draw(Graphics2D g2) {
         boolean newConditionValue=condition.get();
 
+        if (!inMotion.isDone()) {
+            newConditionValue=true;
+        } else
+        if (!outMotion.isDone()) {
+            newConditionValue=false;
+        }
+
         if (newConditionValue) {
 
             if (inMotion.isDone()) {

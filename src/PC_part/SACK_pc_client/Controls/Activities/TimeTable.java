@@ -8,8 +8,10 @@ import PC_part.SACK_pc_client.DataWrapper;
 import PC_part.SACK_pc_client.Dialogs.AddRingDialogue;
 import PC_part.SACK_pc_client.Ring;
 
+import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import java.io.*;
 import java.util.ArrayList;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class TimeTable extends ActivityWithButtons<Ring> {
@@ -66,6 +68,62 @@ public class TimeTable extends ActivityWithButtons<Ring> {
         addButton(() -> UICanvas.longOperationWaiter.processIfConnected(this::loadRingsFromDuino), Labels.getRingsFromDuino);
 
         addButton(() -> UICanvas.longOperationWaiter.processIfConnected(DataWrapper::push), Labels.writeRingsToDuino);
+
+        addButton(this::saveOnDisk, Labels.saveOnDisk);
+
+        addButton(this::loadFromDisk, Labels.loadFromDisk);
+    }
+
+    private static String readLine(File f) throws Exception {
+        StringBuilder lines=new StringBuilder();
+        BufferedReader input;
+        input = new BufferedReader(new FileReader(f));
+        String line;
+        while ((line = input.readLine()) != null) {
+            lines.append(line);
+            lines.append('\n');
+        }
+        input.close();
+        return String.valueOf(lines);
+    }
+
+    private void loadFromDisk() {
+        JFileChooser jfc=new JFileChooser();
+        jfc.setLocation(UICanvas.clickX, UICanvas.clickY);
+        jfc.showOpenDialog(null);
+
+        File f=jfc.getSelectedFile();
+        if (f!=null) {
+            String res;
+            try {
+                res = readLine(f);
+                DataWrapper.deSerializeTable(res);
+                reloadCheckboxes();
+            } catch (Exception e) {
+                DataWrapper.processError(Labels.cannotReadFile);
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void saveOnDisk() {
+        JFileChooser jfc=new JFileChooser();
+        jfc.setLocation(UICanvas.clickX, UICanvas.clickY);
+        jfc.showSaveDialog(null);
+
+        File f=jfc.getSelectedFile();
+        if (f!=null) {
+            FileWriter fw;
+            try {
+                fw = new FileWriter(f);
+                fw.write(DataWrapper.getSerializedTable());
+                fw.close();
+            } catch (IOException e) {
+                DataWrapper.processError(Labels.cannotWriteToFile);
+                e.printStackTrace();
+            }
+        }
+
     }
 
     @Override

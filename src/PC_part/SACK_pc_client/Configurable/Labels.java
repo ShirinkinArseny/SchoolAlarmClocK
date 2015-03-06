@@ -93,8 +93,15 @@ public class Labels {
     public static final String networkErrors=ConfigsReader.getStringValue("networkErrors");
     public static final String cannotDisconnect=ConfigsReader.getStringValue("cannotDisconnect");
 
+    public static String saveOnDisk=ConfigsReader.getStringValue("saveOnDisk");
+    public static String loadFromDisk=ConfigsReader.getStringValue("loadFromDisk");
+    public static String cannotWriteToFile=ConfigsReader.getStringValue("cannotWriteToFile");
+    public static String cannotReadFile=ConfigsReader.getStringValue("cannotReadFile");
+    public static String errorsInTableFile=ConfigsReader.getStringValue("errorsInTableFile");
+
     public static final String cannotReadConfigsValue="Не могу прочитать параметр из конфига: ";
     public static final String cuz=", потому что ";
     public static final String cannotReadConfigsFile="Не могу прочитать конфиги :c";
     public static final String wrongConfigs ="Кривые конфиги: ";
+
 }

@@ -13,8 +13,8 @@ public class AddRingDialogue extends JDialog {
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
-    private JTextArea input;
     private JLabel resultLabel;
+    private JTextField input;
     private final Consumer<Integer> onTimeSet;
 
     private void updateTime() {
