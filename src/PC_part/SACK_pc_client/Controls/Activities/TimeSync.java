@@ -13,9 +13,12 @@ import java.text.SimpleDateFormat;
 public class TimeSync extends ActivityWithButtons {
 
     private int time=-1;
+    private int delta=-1;
+    private int cts=0;
 
     private void getTimeFromDuino() {
                 time = DataWrapper.getDuinoTime();
+                delta= (int) (System.currentTimeMillis()/1000-time);
     }
 
     private void writeLocalTimeToDuino() {
@@ -47,7 +50,7 @@ public class TimeSync extends ActivityWithButtons {
 
         if (DataWrapper.getIsConnected()) {
             g2.drawString(Labels.duinoTime, Menu.itemWidth + 65, Menu.topMargin + Menu.itemHeight * 3 + 25);
-            g2.drawString(Ring.getHumanTime(time), Menu.itemWidth + 65, Menu.topMargin + Menu.itemHeight * 3 + 65);
+            g2.drawString("≈"+Ring.getHumanTime((int)(System.currentTimeMillis()/1000-delta)%(3600*24)), Menu.itemWidth + 65, Menu.topMargin + Menu.itemHeight * 3 + 65);
         }
 
         g2.setFont(Design.font);

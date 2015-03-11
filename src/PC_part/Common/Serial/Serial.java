@@ -180,55 +180,7 @@ public abstract class Serial {
 
             case SetRings: {
 
-                /*
-                    Входная строка вида 25,30,1002:,:,:14,16,28:,:,:,
-                    Переводим её в массив байт вида
-                        количество звонков в понедельник
-                            ссылка на первый звонок
-                            ссылка на второй звонок
-                            ...
-                        количество звонков во вторник
-                            ...
-                        ...
-                        количество уникальных звонков
-                            первый байт первого звонка
-                            второй байт первого звонка
-                            ..
-                 */
-
-                //WARNING! Храним в short, так лучше стыкуются unsigned байты Си и signed байты Java
-                ArrayList<Short> bytes = new ArrayList<>();
-                bytes.add((short) '3');
-
-                ArrayList<Integer> realRings = new ArrayList<>();
-
-                String[] times = s.split(":");
-                for (int day = 0; day < 7; day++) {
-
-                    String[] rings = times[day].split(",");
-                    bytes.add((short) (rings.length));
-                    for (String ring : rings) {
-                        int value = Integer.valueOf(ring);
-
-                        int index = realRings.indexOf(value);
-                        if (index == -1) {
-                            bytes.add((short) realRings.size());
-                            realRings.add(value);
-                        } else {
-                            bytes.add((short) index);
-                        }
-                    }
-                }
-
-                bytes.add((short) realRings.size());
-                for (Integer i : realRings) {
-                    bytes.add((short) (i / 256));
-                    bytes.add((short) (i % 256));
-                }
-                Logger.logInfo("Serial", "Trying to print table to EEPROM: " + bytes);
-
-
-                String resp = tryWhile(bytes, new StringChecker() {
+                String resp = tryWhile("3"+s, new StringChecker() {
                     @Override
                     boolean notMatches(String s) {
                         return s == null || !s.contains("RDone!");

@@ -189,7 +189,6 @@ public class DataWrapper {
 
     public static void push() {
         serial.talkWithDuino(Serial.Action.SetRings, getSerializedTable());
-
     }
 
     public static String[] getPorts() {
