@@ -20,14 +20,14 @@ public class ConditionedButtonPanel {
 
     private TimeFunction inMotion;
     private TimeFunction outMotion;
-    private static final float hideAndAppearTime=0.7f;
+    private static final float hideAndAppearTime=0.4f;
 
     public ConditionedButtonPanel(Runnable[] actions, String[] names, Supplier<Boolean> condition) {
         this.condition = condition;
         if (actions.length==names.length) {
             itemsNumber=actions.length;
         } else {
-            Logger.logError("ConditionedButtonPanel", "Not same names and actions number!");
+            Logger.logError(this.getClass(), "Not same names and actions number!");
         }
         this.actions = actions;
         this.names = names;

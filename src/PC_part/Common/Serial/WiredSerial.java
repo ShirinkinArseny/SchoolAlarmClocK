@@ -74,7 +74,7 @@ public class WiredSerial extends Serial {
                 e.printStackTrace();
             }
 
-            Logger.logInfo("WiredSerial", "Connected to serial on " + name);
+            Logger.logInfo(this.getClass(), "Connected to serial on " + name);
             connected=true;
         } catch (SerialPortException e1) {
             e1.printStackTrace();
@@ -85,9 +85,9 @@ public class WiredSerial extends Serial {
     public void disconnect() {
         try {
             serialPort.closePort();
-            Logger.logInfo("WiredSerial", "Disconnected from serial");
+            Logger.logInfo(this.getClass(), "Disconnected from serial");
         } catch (SerialPortException e) {
-            Logger.logError("WiredSerial", "Can't disconnect from serial, cuz " + e.toString());
+            Logger.logError(this.getClass(), "Can't disconnect from serial, cuz " + e.toString());
             DataWrapper.processError(Labels.cannotDisconnect);
         }
         connected=false;

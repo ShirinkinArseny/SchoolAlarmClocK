@@ -39,18 +39,18 @@ public class Main {
         int port = -1;
         if (args.length == 0) {
             port = 80;
-            logWarning("main", "No port specified, using default: " + port);
+            logWarning(Main.class, "No port specified, using default: " + port);
         } else {
             try {
                 port = Integer.valueOf(args[0]);
             } catch (NumberFormatException e) {
-                logError("main", "Failed to parse port: " + args[0]);
+                logError(Main.class, "Failed to parse port: " + args[0]);
                 System.exit(1);
             }
         }
 
 
-        logInfo("main", "Binding port: " + port);
+        logInfo(Main.class, "Binding port: " + port);
         ServerSocket ss = new ServerSocket(port);
         boolean isWorking = true;
         while (isWorking) {
@@ -86,7 +86,7 @@ public class Main {
                 String[] words = firstLine.split(" ");
                 String address = words[1];
                 if (address.startsWith("/")) address = address.substring(1);
-                Logger.logInfo("Main", "Requested " + address);
+                Logger.logInfo(this.getClass(), "Requested " + address);
 
                 if (line.startsWith("POST")) {//processing post-request
 
@@ -129,17 +129,17 @@ public class Main {
 
                         switch(address) {
                             case "table":
-                                serial.talkWithDuino(Serial.Action.SetRings, s.toString());
+                                serial.talkWithDuino(Serial.Action.SetRings, s.toString().getBytes());
                                 os.write("OK".getBytes());
                                 break;
                             case "time":
                                 os.write("OK".getBytes());
-                                serial.talkWithDuino(Serial.Action.SetTime, s.toString());
+                                serial.talkWithDuino(Serial.Action.SetTime, s.toString().getBytes());
                                 break;
                         }
 
                     } else {
-                        logWarning("POST", "Unknown content type: " + type);
+                        logWarning(this.getClass(), "Unknown content type: " + type);
                     }
                 } else
 

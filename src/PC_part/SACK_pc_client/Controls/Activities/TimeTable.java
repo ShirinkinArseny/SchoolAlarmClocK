@@ -1,5 +1,6 @@
 package PC_part.SACK_pc_client.Controls.Activities;
 
+import PC_part.Common.Logger;
 import PC_part.SACK_pc_client.Configurable.Labels;
 import PC_part.SACK_pc_client.Controls.ConditionedButtonPanel;
 import PC_part.SACK_pc_client.Controls.Menu;
@@ -74,17 +75,39 @@ public class TimeTable extends ActivityWithButtons<Ring> {
         addButton(this::loadFromDisk, Labels.loadFromDisk);
     }
 
-    private static String readLine(File f) throws Exception {
-        StringBuilder lines=new StringBuilder();
-        BufferedReader input;
-        input = new BufferedReader(new FileReader(f));
-        String line;
-        while ((line = input.readLine()) != null) {
-            lines.append(line);
-            lines.append('\n');
+    private static byte[] readLine(File f) throws Exception {
+        ByteArrayOutputStream ous;
+        InputStream ios = new FileInputStream(f);
+
+        byte[] buffer = new byte[4096];
+        ous = new ByteArrayOutputStream();
+        int read;
+        try {
+            while ((read = ios.read(buffer)) != -1) {
+                ous.write(buffer, 0, read);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                ios.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                ous.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-        input.close();
-        return String.valueOf(lines);
+
+        byte[] b=ous.toByteArray();
+        if (b.length==0) {
+            Logger.logError(TimeTable.class, "File length is 0!");
+            throw new Exception("File length is 0!");
+        }
+
+        return b;
     }
 
     private void loadFromDisk() {
@@ -94,7 +117,7 @@ public class TimeTable extends ActivityWithButtons<Ring> {
 
         File f=jfc.getSelectedFile();
         if (f!=null) {
-            String res;
+            byte[] res;
             try {
                 res = readLine(f);
                 DataWrapper.deSerializeTable(res);
@@ -113,14 +136,20 @@ public class TimeTable extends ActivityWithButtons<Ring> {
 
         File f=jfc.getSelectedFile();
         if (f!=null) {
-            FileWriter fw;
+            FileOutputStream fw = null;
             try {
-                fw = new FileWriter(f);
+                fw = new FileOutputStream(f);
                 fw.write(DataWrapper.getSerializedTable());
-                fw.close();
             } catch (IOException e) {
                 DataWrapper.processError(Labels.cannotWriteToFile);
                 e.printStackTrace();
+            } finally {
+                if (fw!=null)
+                    try {
+                        fw.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
             }
         }
 

@@ -8,6 +8,8 @@ import PC_part.SACK_pc_client.DataWrapper;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import static PC_part.SACK_pc_client.PlayingAroundBytes.intsToBytes;
+
 public abstract class Serial {
 
     /*
@@ -64,10 +66,10 @@ public abstract class Serial {
      */
     public abstract void disconnect();
 
-    private void request(ArrayList<Short> ask) {
+    private void request(byte[] ask) {
         try {
             initConnection();
-            for (Short anAsk : ask) sendByte(anAsk.byteValue());
+            for (byte anAsk : ask) sendByte(anAsk);
             sendStop();
             closeConnection();
         } catch (Exception e) {
@@ -85,7 +87,7 @@ public abstract class Serial {
         }
     }
 
-    private String tryWhile(ArrayList<Short> request, StringChecker checker) {
+    private String tryWhile(byte[] request, StringChecker checker) {
 
         int cycle = 0;
 
@@ -102,12 +104,12 @@ public abstract class Serial {
 
             cycle++;
             if (cycle > tries) {
-                Logger.logError("Serial", "Can't process " + request + "\n       last read: " + resp);
+                Logger.logError(this.getClass(), "Can't process " + Arrays.toString(request) + "\n       last read: " + resp);
                 DataWrapper.processError(Labels.networkErrors);
                 break;
             }
         }
-        Logger.logInfo("Serial", "Processed in " + cycle + " steps");
+        Logger.logInfo(this.getClass(), "Processed in " + cycle + " steps");
         return resp;
     }
 
@@ -128,20 +130,27 @@ public abstract class Serial {
 
             cycle++;
             if (cycle > tries) {
-                Logger.logError("Serial", "Can't process " + request + "\n       last read: " + resp);
+                Logger.logError(this.getClass(), "Can't process " + request + "\n       last read: " + resp);
                 DataWrapper.processError(Labels.networkErrors);
                 return null;
             }
         }
-        Logger.logInfo("Serial", "Processed in " + cycle + " steps");
+        Logger.logInfo(this.getClass(), "Processed in " + cycle + " steps");
         return resp;
     }
 
     public enum Action {RequestWeekDay, RequestTime, RequestRings, SetRings, SetTime}
 
-    public synchronized String talkWithDuino(Action act, String s) {
+    private static byte[] sum(char c, byte[] b) {
+        byte[] res=new byte[b.length+1];
+        res[0]= (byte) c;
+        System.arraycopy(b, 0, res, 1, b.length);
+        return res;
+    }
 
-        Logger.logInfo("Serial", "Talking with duino, action: " + act + " request: " + s);
+    public synchronized String talkWithDuino(Action act, byte[] s) {
+
+        Logger.logInfo(this.getClass(), "Talking with duino, action: " + act + " request: " + s);
 
         switch (act) {
             case RequestWeekDay: {
@@ -172,27 +181,27 @@ public abstract class Serial {
                 });
 
                 if (rings != null)
-                    Logger.logInfo("Serial", "Gotta rings: " + rings.replaceAll("\\n", ""));
+                    Logger.logInfo(this.getClass(), "Gotta rings: " + rings.replaceAll("\\n", ""));
                 else
-                    Logger.logError("Serial", "Gotta null rings");
+                    Logger.logError(this.getClass(), "Gotta null rings");
                 return rings;
             }
 
             case SetRings: {
 
-                String resp = tryWhile("3"+s, new StringChecker() {
+                String resp = tryWhile(sum('3', s), new StringChecker() {
                     @Override
                     boolean notMatches(String s) {
                         return s == null || !s.contains("RDone!");
                     }
                 });
 
-                Logger.logInfo("Serial", "Printing table to EEPROM! Answer: " + resp);
+                Logger.logInfo(this.getClass(), "Printing table to EEPROM! Answer: " + resp);
                 return resp;
             }
             case SetTime: {
 
-                String[] splitted = s.split(":");
+                String[] splitted = new String(s).split(":");
                 if (splitted.length == 6) {
                     int hour = Integer.valueOf(splitted[0]);
                     int minute = Integer.valueOf(splitted[1]);
@@ -211,27 +220,27 @@ public abstract class Serial {
                             ) {
 
 
-                        ArrayList<Short> bytes = new ArrayList<>();
-                        bytes.add((short) '6');
-                        bytes.add((short) (hour % 256));
-                        bytes.add((short) (minute % 256));
-                        bytes.add((short) (second % 256));
-                        bytes.add((short) (day % 256));
-                        bytes.add((short) (month % 256));
-                        bytes.add((short) (year / 256));
-                        bytes.add((short) (year % 256));
+                        ArrayList<Integer> bytes = new ArrayList<>();
+                        bytes.add((int) '6');
+                        bytes.add(hour % 256);
+                        bytes.add(minute % 256);
+                        bytes.add(second % 256);
+                        bytes.add(day % 256);
+                        bytes.add(month % 256);
+                        bytes.add(year / 256);
+                        bytes.add(year % 256);
 
 
-                        return tryWhile(bytes, new StringChecker() {
+                        return tryWhile(intsToBytes(bytes), new StringChecker() {
                             @Override
                             boolean notMatches(String s) {
                                 return s == null || !s.contains("TDone!");
                             }
                         });
                     }
-                    Logger.logError("Serial", "Wrong time string: " + Arrays.toString(splitted) + " - values are not in bounds");
+                    Logger.logError(this.getClass(), "Wrong time string: " + Arrays.toString(splitted) + " - values are not in bounds");
                 }
-                Logger.logError("Serial", "Wrong time string: " + Arrays.toString(splitted) + " - not 6 args");
+                Logger.logError(this.getClass(), "Wrong time string: " + Arrays.toString(splitted) + " - not 6 args");
                 return null;
             }
         }

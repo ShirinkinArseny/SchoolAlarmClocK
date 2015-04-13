@@ -8,6 +8,10 @@ import PC_part.SACK_pc_client.Dialogs.ErrorDialogue;
 import PC_part.Common.Logger;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+
+import static PC_part.SACK_pc_client.PlayingAroundBytes.bytesToInts;
+import static PC_part.SACK_pc_client.PlayingAroundBytes.intsToBytes;
 
 public class DataWrapper {
 
@@ -102,23 +106,23 @@ public class DataWrapper {
         }
 
 
-        Logger.logInfo("DataWrapper", "Got data from duino");
+        Logger.logInfo(DataWrapper.class, "Got data from duino");
 
     }
 
-    public static void deSerializeTable(String table) {
+    public static void deSerializeTable(byte[] table) {
 
         try {
 
+            Logger.logInfo(DataWrapper.class, "Data to deserialize: "+ Arrays.toString(table));
 
-            short[] data = new short[table.length()];
-            for (int i = 0; i < data.length; i++)
-                data[i] = (short) table.charAt(i);
+            int[] data = bytesToInts(table);
 
+            Logger.logInfo(DataWrapper.class, "Normalised data to deserialize: "+ Arrays.toString(data));
 
             int index = -1;
 
-            ArrayList<Short>[] ringsRefs = new ArrayList[7];
+            ArrayList<Integer>[] ringsRefs = new ArrayList[7];
             ArrayList<Integer> rings = new ArrayList<>();
 
             for (int day = 0; day < 7; day++) {
@@ -141,7 +145,7 @@ public class DataWrapper {
             ArrayList<Ring>[] ringsNew = new ArrayList[7];
             for (int day = 0; day < 7; day++) {
                 ringsNew[day] = new ArrayList<>(ringsRefs[day].size());
-                for (short ringRef : ringsRefs[day]) {
+                for (int ringRef : ringsRefs[day]) {
                     ringsNew[day].add(new Ring(rings.get(ringRef) * 10));
                 }
             }
@@ -150,41 +154,43 @@ public class DataWrapper {
         }
         catch (Exception e) {
             DataWrapper.processError(Labels.errorsInTableFile);
+            e.printStackTrace();
         }
     }
 
-    public static String getSerializedTable() {
-        ArrayList<Short> bytes = new ArrayList<>();
+    public static byte[] getSerializedTable() {
 
-        ArrayList<Integer> realRings = new ArrayList<>();
+        Logger.logInfo(DataWrapper.class, "Starting serialization!\n");
+
+        ArrayList<Integer> bytes = new ArrayList<>();// структура: ссылки на звонки+звонки
+
+        ArrayList<Integer> realRings = new ArrayList<>();//реальные звонки, на которые будем впоследствие ссылаться
 
         for (int day = 0; day < 7; day++) {
 
-            bytes.add((short) (weekdays[day].size()));
+            bytes.add(weekdays[day].size());
             for (Ring ring : weekdays[day]) {
                 int value = ring.getSeconds() / 10;
 
                 int index = realRings.indexOf(value);
                 if (index == -1) {
-                    bytes.add((short) realRings.size());
+                    bytes.add(realRings.size());
                     realRings.add(value);
                 } else {
-                    bytes.add((short) index);
+                    bytes.add(index);
                 }
             }
         }
+        Logger.logInfo(DataWrapper.class, "Links: " + Arrays.toString(bytes.toArray()));
 
-        bytes.add((short) realRings.size());
+        bytes.add(realRings.size());
         for (Integer i : realRings) {
-            bytes.add((short) (i / 256));
-            bytes.add((short) (i % 256));
+            bytes.add(i / 256);
+            bytes.add(i % 256);
         }
+        Logger.logInfo(DataWrapper.class, "Full data: "+ Arrays.toString(bytes.toArray()));
 
-        StringBuilder sb = new StringBuilder();
-        for (short s : bytes)
-            sb.append((char) s);
-
-        return sb.toString();
+        return intsToBytes(bytes);
     }
 
     public static void push() {
@@ -250,7 +256,8 @@ public class DataWrapper {
     }
 
     public static void setTime() {
-        serial.talkWithDuino(Serial.Action.SetTime, new java.text.SimpleDateFormat("HH:mm:ss:dd:MM:yyyy").format(new java.util.Date()));
+        serial.talkWithDuino(Serial.Action.SetTime,
+                new java.text.SimpleDateFormat("HH:mm:ss:dd:MM:yyyy").format(new java.util.Date()).getBytes());
     }
 
     public static void pingDuino() {
