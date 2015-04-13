@@ -1,6 +1,6 @@
 #include <EEPROM.h>
 
-#include "Time.h"
+#include <Time.h>
 #include "RingKeeper.h"
 
 #define USE_EXTERNAL_EEPROM
