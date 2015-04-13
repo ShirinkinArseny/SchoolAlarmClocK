@@ -3,12 +3,15 @@
 #include "J35DL.h"
 #include "Ring.h"
 #include "Time.h"
+#include <DS1307RTC.h>
+#include <Wire.h>
 
 long getCurrentTime() {
     return 3600L*hour()+60L*minute()+second();
 }
 
 #define DELAY_TIME_COEF 2000   //длительность стандартного звонка
+#define TIME_SYNC_INTERVAL 60  //время в секундах между проверкой времени
 
 Ring* weekRings; //все звонки сегодня.
 
@@ -38,6 +41,8 @@ void initRingKeeper(byte ringPin) {
   //initConnection(13, 12);
 
   //writeDefaultRings();
+  setSyncProvider(RTC.get);
+  setSyncInterval(TIME_SYNC_INTERVAL);
 
   currentWeekDay=getWeekDay();
   weekRings=getDayRings(currentWeekDay);
@@ -202,6 +207,7 @@ void readNewTimeFromSerial() {
     day,
     month,
     year1*256+year2);
+    RTC.set(now());
 
     Serial.print('T');
     Serial.println(done);

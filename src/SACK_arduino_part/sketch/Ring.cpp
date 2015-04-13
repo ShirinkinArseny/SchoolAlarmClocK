@@ -12,14 +12,15 @@
 #define writeByte(address, value) EEPROM.write(address, value)
 
 
-/*#ifdef USE_EXTERNAL_EEPROM
+#define USE_EXTERNAL_EEPROM
+#ifdef USE_EXTERNAL_EEPROM
 #include "ExtEEPROM.h"
 #define readByte(address) readEEPROM(address)
 #define writeByte(address,value) writeEEPROM(address, value)
 #else //In case of internal
 #define readByte(address) EEPROM.read(address)
 #define writeByte(address, value) EEPROM.write(address, value)
-#endif  //USE_EXTERNAL_EEPROM*/
+#endif  //USE_EXTERNAL_EEPROM
 
 
 Ring::Ring (uint16_t memoryRepresentation) {
