@@ -8,10 +8,6 @@
 
 #define RINGS_DATABLOCK_START 512
 
-#define readByte(address) EEPROM.read(address)
-#define writeByte(address, value) EEPROM.write(address, value)
-
-
 #define USE_EXTERNAL_EEPROM
 #ifdef USE_EXTERNAL_EEPROM
 #include "ExtEEPROM.h"
@@ -44,7 +40,7 @@ uint16_t Ring::getMemoryRepresentation() {
   return  Ring::memoryRepresentation;
 }
 
-/*byte Ring::getTimeLength() {
+/*byte Ring::getTimeLength() {                                                                                                l
   return bitRead(Ring::memoryRepresentation, 0)*2+bitRead(Ring::memoryRepresentation, 1)+1;
 }*/
 
