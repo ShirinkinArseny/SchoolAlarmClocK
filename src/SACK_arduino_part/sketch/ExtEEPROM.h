@@ -3,7 +3,9 @@
 
 #include <Arduino.h>
 
-#define DEVICE_ADDRESS B1010000 //EEPROM slave address
+#ifndef EEPROM_ADDRESS
+#define EEPROM_ADDRESS B1010110 //EEPROM slave address
+#endif
 
 //Инициализация EEPROM
 void initEEPROM();
