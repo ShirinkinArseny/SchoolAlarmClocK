@@ -7,6 +7,7 @@
 ### PROJECT_DIR
 ### This is the path to where you have created/cloned your project
 PROJECT_DIR = $(shell basename $(shell pwd))
+ARDUINO_SKETCHBOOK = PROJECT_DIR
 
 ### BOARD_TAG
 ### It must be set to the board you are currently using. (i.e uno, mega2560, etc.)
