@@ -82,7 +82,7 @@ void printFreeMemory() {
 
 /*
 Читаем байт из соединения.
-Если байт считан некорректно 0 предпринимаем несколько дополнительных попыток чтения.
+Если байт считан некорректно - предпринимаем несколько дополнительных попыток чтения.
 В случае отсутствия данных возвращаем -1.
 */
 int readValue() {
@@ -262,6 +262,25 @@ void readNewTimeFromSerial() {
 }
 
 /*
+Печатаем в соединение список сегодняшних звонков
+*/
+void printTodaysRings() {
+    Serial.print("CTS: ");
+    Serial.print(currentTimeSec);
+    Serial.print(" RINGS: ");
+    byte i=0;
+    while (!weekRings[i].isEmpty()) {
+      long ringTime=weekRings[i].getSecondFromDayStart();
+      Serial.print(ringTime);
+      Serial.print(", ");
+      i++;
+    }
+    Serial.print('P');
+    Serial.print(done);
+    Serial.print('\n');
+}
+
+/*
 Читаем команду из соединения. Если команда успешно считана- выполняем её.
 */
 void readCommandsFromSerial() {
@@ -289,6 +308,9 @@ void readCommandsFromSerial() {
                 break;
             case '6':                       //set time
                 readNewTimeFromSerial();
+                break;
+            case '7':                       //request today's rings
+                printTodaysRings();
                 break;
 
         }
