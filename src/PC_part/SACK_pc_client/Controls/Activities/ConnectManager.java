@@ -27,7 +27,7 @@ public class ConnectManager extends ActivityWithButtons<String> {
 
         addButton(this::connect, Labels.connectToSelected);
 
-        addButton(this::tryWiFi, Labels.network);
+        //addButton(this::tryWiFi, Labels.network);
 
         reloadCheckboxes();
     }

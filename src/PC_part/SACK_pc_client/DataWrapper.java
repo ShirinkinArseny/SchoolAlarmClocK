@@ -160,7 +160,7 @@ public class DataWrapper {
 
     public static byte[] getSerializedTable() {
 
-        Logger.logInfo(DataWrapper.class, "Starting serialization!\n");
+        Logger.logInfo(DataWrapper.class, "Starting serialization!");
 
         ArrayList<Integer> bytes = new ArrayList<>();// структура: ссылки на звонки+звонки
 

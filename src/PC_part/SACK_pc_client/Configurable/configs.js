@@ -14,9 +14,7 @@ windowBoarders=0;
 dragWindow=1;
 resizableWindow=0;
 
-bigFontName="Fira Sans Thin";
 bigFontSize=35;
-smallFontName="Fira Sans Thin";
 smallFontSize=20;
 
 updatePortsList = "ОБНОВИТЬ СПИСОК ПОРТОВ";

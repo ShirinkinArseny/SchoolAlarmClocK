@@ -1,6 +1,11 @@
 package PC_part.SACK_pc_client.Configurable;
 
+import PC_part.Common.Logger;
+import PC_part.SACK_pc_client.Resources.Images;
+
 import java.awt.*;
+import java.io.FileInputStream;
+import java.io.IOException;
 
 public class Design {
 
@@ -19,10 +24,38 @@ public class Design {
     public static final Color darkFontColor =
             new Color(ConfigsReader.getIntValue("darkFontColor"));
 
-    public static final Font font = new Font(ConfigsReader.getStringValue("bigFontName"),
-            Font.PLAIN, ConfigsReader.getIntValue("bigFontSize"));
-    public static final Font fontSmall = new Font(ConfigsReader.getStringValue("smallFontName"),
-            Font.PLAIN, ConfigsReader.getIntValue("smallFontSize"));
+    public static Font font;
+    public static Font fontSmall;
+
+    static {
+
+        try {
+            font = Font.createFont(Font.TRUETYPE_FONT,
+                    Images.class.getResourceAsStream("FiraSans-Thin.ttf"));
+
+            font=font.deriveFont(ConfigsReader.getFloatValue("bigFontSize"));
+
+            Logger.logInfo(Design.class, "Font had been read successfully");
+        } catch (Exception e) {
+            Logger.logError(Design.class, "Cannot read font");
+            new Exception().printStackTrace();
+            System.exit(1);
+        }
+
+        try {
+            fontSmall = Font.createFont(Font.TRUETYPE_FONT,
+                    Images.class.getResourceAsStream("FiraSans-Thin.ttf"));
+
+            fontSmall=fontSmall.deriveFont(ConfigsReader.getFloatValue("smallFontSize"));
+
+            Logger.logInfo(Design.class, "Font had been read successfully");
+        } catch (Exception e) {
+            Logger.logError(Design.class, "Cannot read font");
+            new Exception().printStackTrace();
+            System.exit(1);
+        }
+
+    }
 
     public static final Stroke fat = new BasicStroke(3);
 
