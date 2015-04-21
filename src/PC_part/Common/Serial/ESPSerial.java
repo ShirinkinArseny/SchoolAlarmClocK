@@ -1,3 +1,4 @@
+/*
 package PC_part.Common.Serial;
 
 import java.io.IOException;
@@ -91,3 +92,4 @@ public class ESPSerial extends Serial {
         this(ipESP, port, 64*1024);
     }
 }
+*/

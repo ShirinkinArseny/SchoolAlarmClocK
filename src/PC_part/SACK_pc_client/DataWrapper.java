@@ -1,6 +1,5 @@
 package PC_part.SACK_pc_client;
 
-import PC_part.Common.Serial.ESPSerial;
 import PC_part.Common.Serial.Serial;
 import PC_part.Common.Serial.WiredSerial;
 import PC_part.SACK_pc_client.Configurable.Labels;
@@ -71,41 +70,9 @@ public class DataWrapper {
         }
 
 
-        String resp = serial.talkWithDuino(Serial.Action.RequestRings, null);
+        byte[] resp = serial.talkWithDuino(Serial.Action.RequestRings, null);
 
-        if (resp == null) return;
-
-        int i = 0;
-        String[] days = new String[7];
-        while (i < 7) {
-
-            int index = resp.indexOf("],[");
-            if (index == -1) index = resp.length() - 1;
-            days[i] = (index + 3) < resp.length() ? resp.substring(0, index).replaceAll("[\\[\\]]", "") : resp;
-            resp = (index + 3) < resp.length() ? resp.substring(index + 3) : "";
-
-            i++;
-        }
-
-        for (i = 0; i < 7; i++) {
-
-            String rings[] = days[i].split(",");
-
-            weekdays[i].clear();
-            for (String r : rings) {
-                while (r.endsWith("]"))
-                    r = r.substring(0, r.length() - 1);
-                if (r.matches("\\d+"))
-                    weekdays[i].add(new Ring(Integer.parseInt(r)));
-            }
-
-
-            sortDay(i);
-            removeSame(i);
-
-        }
-
-
+        deSerializeTable(resp);
         Logger.logInfo(DataWrapper.class, "Got data from duino");
 
     }
@@ -188,7 +155,7 @@ public class DataWrapper {
             bytes.add(i / 256);
             bytes.add(i % 256);
         }
-        Logger.logInfo(DataWrapper.class, "Full data: "+ Arrays.toString(bytes.toArray()));
+        Logger.logInfo(DataWrapper.class, "Full data: " + Arrays.toString(bytes.toArray()));
 
         return intsToBytes(bytes);
     }
@@ -209,11 +176,11 @@ public class DataWrapper {
         }
     }
 
-    private static String ipToString(int[] ip) {
+    /*private static String ipToString(int[] ip) {
         return ip[0] + "." + ip[1] + "." + ip[2] + "." + ip[3];
-    }
+    }*/
 
-    public static void connect(int[] ip) {
+    /*public static void connect(int[] ip) {
         if (serial.getIsConnected()) {
             serial.disconnect();
         }
@@ -228,7 +195,7 @@ public class DataWrapper {
             connectionState = Labels.cannotConnectTo + ipToString(ip);
             processError(Labels.cannotConnectTo + ipToString(ip));
         }
-    }
+    }*/
 
     public static void connect(String value) {
         if (serial.getIsConnected()) {
@@ -267,11 +234,10 @@ public class DataWrapper {
     }
 
     public static int getDuinoTime() {
-        String val = serial.talkWithDuino(Serial.Action.RequestTime, null);
+        byte[] val = serial.talkWithDuino(Serial.Action.RequestTime, null);
 
         if (val != null) {
-            val = val.substring(0, val.length() - 2);
-            return Integer.valueOf(val);
+            return Integer.valueOf(new String(val).substring(0, val.length - 2));
         }
         return -1;
     }

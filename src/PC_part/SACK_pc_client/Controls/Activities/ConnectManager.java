@@ -32,9 +32,9 @@ public class ConnectManager extends ActivityWithButtons<String> {
         reloadCheckboxes();
     }
 
-    private void tryWiFi() {
+    /*private void tryWiFi() {
         new IPAddressREquestDialogue(DataWrapper::connect);
-    }
+    }*/
 
     private void connect() {
         if (getSelectedItemsExists()) {

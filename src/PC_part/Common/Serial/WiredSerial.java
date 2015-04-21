@@ -37,15 +37,14 @@ public class WiredSerial extends Serial {
     }
 
     @Override
-    String readString() {
-            try {
-
-                Thread.sleep(10);
-                return serialPort.readString();
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
+    public byte[] readBytes() {
+        try {
+            Thread.sleep(10);
+            return serialPort.readBytes();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     private boolean connected=false;

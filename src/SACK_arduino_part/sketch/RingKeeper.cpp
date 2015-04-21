@@ -177,6 +177,8 @@ void readNewRingsTableFromSerial() {
             int size=readValue(); //Количество звонков
             if (checkForWrongRead(size, "E3", 7, 0)) return;
 
+            writeTimeStampsCountToEEPROM(size);
+
             /*
                 Читаем звонки
             */
@@ -194,35 +196,37 @@ void readNewRingsTableFromSerial() {
 
             //Подтверждение успешной отправки
             Serial.print('R');
-            Serial.println(done);
+            Serial.print(done);
 }
 
 /*
 Пишем текущую таблицу звонков в соединение.
-Формат:
-//TODO: ПЕРЕДЕЛАТЬ НАХЕР
 */
 void printRingsTableToSerial() {
-    Serial.print('[');
+
+
+    delete(weekRings);
+
     for (byte day=0; day<7; day++) {
-
-        delete(weekRings);
-        weekRings=getDayRings(day);
-
-        Serial.print('[');
-        int ring=0;
-        while (!weekRings[ring].isEmpty()) {
-            Serial.print(weekRings[ring].getMemoryRepresentation());
-            Serial.print(0);
-            if (!weekRings[ring+1].isEmpty()) Serial.print(',');
-            ring++;
+        byte* dayLinks=getDayMemoryRepresentation(day);
+        for (byte i=0; i<=dayLinks[0]; i++) {
+            Serial.print((char)dayLinks[i]);
         }
-        Serial.print(']');
-        if (day!=6) Serial.print(',');
-
-
+        delete(dayLinks);
     }
-    Serial.println(']');
+
+    byte* timeStamps=getRingsTimeStamps();
+    Serial.print((char)timeStamps[0]);
+    for (int i=1; i<=timeStamps[0]*2; i+=2) {
+        Serial.print((char)timeStamps[i]);
+        Serial.print((char)timeStamps[i+1]);
+    }
+    delete(timeStamps);
+
+    //Подтверждение успешной отправки
+    Serial.print('O');
+    Serial.print(done);
+
     loadTodayRings();
 }
 
@@ -253,7 +257,7 @@ void readNewTimeFromSerial() {
 
     //Подтверждение успешной отправки
     Serial.print('T');
-    Serial.println(done);
+    Serial.print(done);
 
     currentTimeSec=getCurrentTime();
     lastTimeSec=currentTimeSec-1;

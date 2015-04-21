@@ -46,9 +46,9 @@ public abstract class Serial {
     }
 
     /*
-            Чтение строки
+            Чтение массива байт
      */
-    abstract String readString();
+    abstract byte[] readBytes();
 
     /*
             Установка соединения по его имени
@@ -87,24 +87,25 @@ public abstract class Serial {
         }
     }
 
-    private String tryWhile(byte[] request, StringChecker checker) {
+    private byte[] tryWhile(byte[] request, StringChecker checker) {
 
         int cycle = 0;
 
         request(request);
-        String resp = "";
+        byte[] resp=new byte[0];
 
         while (checker.notMatches(resp)) {
             //даём дуине $tries попыток обработать данные корректно
             //(некоторые сообщения приходится читать долго, здесь мы суммируем считанное)
 
-            String newR = readString();
+            byte[] newR = readBytes();
             if (newR != null)
-                resp += newR;
+                resp =sumArrays(resp, newR);
 
             cycle++;
             if (cycle > tries) {
-                Logger.logError(this.getClass(), "Can't process " + Arrays.toString(request) + "\n       last read: " + resp);
+                Logger.logError(this.getClass(), "Can't process " + Arrays.toString(request) +
+                        "\n       last read: " + Arrays.toString(resp));
                 DataWrapper.processError(Labels.networkErrors);
                 break;
             }
@@ -113,24 +114,31 @@ public abstract class Serial {
         return resp;
     }
 
-    private String tryWhile(String request, StringChecker checker) {
+    private byte[] sumArrays(byte[] a, byte[] b) {
+        byte[] c=new byte[a.length+b.length];
+        System.arraycopy(a, 0, c, 0, a.length);
+        System.arraycopy(b, 0, c, a.length, b.length);
+        return c;
+    }
+
+    private byte[] tryWhile(String request, StringChecker checker) {
 
         int cycle = 0;
 
         request(request);
-        String resp = "";
+        byte[] resp=new byte[0];
 
         while (checker.notMatches(resp)) {
             //даём дуине $tries попыток обработать данные корректно
             //(некоторые сообщения приходится читать долго, здесь мы суммируем считанное)
 
-            String newR = readString();
+            byte[] newR = readBytes();
             if (newR != null)
-                resp += newR;
+                resp =sumArrays(resp, newR);
 
             cycle++;
             if (cycle > tries) {
-                Logger.logError(this.getClass(), "Can't process " + request + "\n       last read: " + resp);
+                Logger.logError(this.getClass(), "Can't process " + request + "\n       last read: " + Arrays.toString(resp));
                 DataWrapper.processError(Labels.networkErrors);
                 return null;
             }
@@ -148,16 +156,16 @@ public abstract class Serial {
         return res;
     }
 
-    public synchronized String talkWithDuino(Action act, byte[] s) {
+    public synchronized byte[] talkWithDuino(Action act, byte[] s) {
 
-        Logger.logInfo(this.getClass(), "Talking with duino, action: " + act + " request: " + s);
+        Logger.logInfo(this.getClass(), "Talking with duino, action: " + act + " request: " + Arrays.toString(s));
 
         switch (act) {
             case RequestWeekDay: {
                 return tryWhile("5", new StringChecker() {
                     @Override
-                    boolean notMatches(String s) {
-                        return s == null || !s.matches("\\d+\\r\\n");
+                    boolean notMatches(byte[] s) {
+                        return s == null || !new String(s).matches("\\d+\\r\\n");
                     }
                 });
             }
@@ -165,38 +173,43 @@ public abstract class Serial {
             case RequestTime: {
                 return tryWhile("2", new StringChecker() {
                     @Override
-                    boolean notMatches(String s) {
-                        return s == null || !s.matches("\\d+\\r\\n");
+                    boolean notMatches(byte[] s) {
+                        return s == null || !new String(s).matches("\\d+\\r\\n");
                     }
                 });
             }
 
             case RequestRings: {
 
-                String rings = tryWhile("1", new StringChecker() {
+                byte[] rings = tryWhile("1", new StringChecker() {
                     @Override
-                    boolean notMatches(String s) {
-                        return s == null || !s.matches("\\[\\[.*]]\\r\\n");
+                    boolean notMatches(byte[] s) {
+                        return s == null || !new String(s).contains("ODone!");
                     }
                 });
 
                 if (rings != null)
-                    Logger.logInfo(this.getClass(), "Gotta rings: " + rings.replaceAll("\\n", ""));
-                else
+                    Logger.logInfo(this.getClass(), "Gotta rings: " + Arrays.toString(rings));
+                else {
                     Logger.logError(this.getClass(), "Gotta null rings");
-                return rings;
+                    return null;
+                }
+
+                byte[] resultData=new byte[rings.length-6];
+                System.arraycopy(rings, 0, resultData, 0, rings.length-6);
+                return resultData;
             }
 
             case SetRings: {
 
-                String resp = tryWhile(sum('3', s), new StringChecker() {
+                byte[] resp = tryWhile(sum('3', s), new StringChecker() {
                     @Override
-                    boolean notMatches(String s) {
-                        return s == null || !s.contains("RDone!");
+                    boolean notMatches(byte[] s) {
+                        return s == null || !new String(s).contains("RDone!");
                     }
                 });
 
-                Logger.logInfo(this.getClass(), "Printing table to EEPROM! Answer: " + resp);
+                Logger.logInfo(this.getClass(), "Printing table to EEPROM! Answer: " + Arrays.toString(resp));
                 return resp;
             }
             case SetTime: {
@@ -233,8 +246,9 @@ public abstract class Serial {
 
                         return tryWhile(intsToBytes(bytes), new StringChecker() {
                             @Override
-                            boolean notMatches(String s) {
-                                return s == null || !s.contains("TDone!");
+                            boolean notMatches(byte[] s) {
+                                Logger.logInfo(this.getClass(), "new String(s) : "+new String(s));
+                                return s == null || !new String(s).contains("TDone!");
                             }
                         });
                     }
@@ -248,7 +262,7 @@ public abstract class Serial {
     }
 
     abstract class StringChecker {
-        abstract boolean notMatches(String s);
+        abstract boolean notMatches(byte[] s);
     }
 
     public abstract boolean getIsConnected();
