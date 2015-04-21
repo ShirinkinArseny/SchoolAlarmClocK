@@ -16,6 +16,7 @@ public abstract class ActivityWithButtons<T> implements Activity {
     private final ArrayList<ExtendableButton> actions=new ArrayList<>();
     private final ArrayList<ExtendableCheckbox<T>> checkboxes = new ArrayList<>();
     private final int checkBoxesYOffset;
+    private boolean acceptMultiselect;
     private int selectedItemsNumber=0;
 
     public boolean getSelectedItemsExists() {
@@ -28,8 +29,9 @@ public abstract class ActivityWithButtons<T> implements Activity {
                 this.cbt=cbt;
             }
 
-    ActivityWithButtons(int checkBoxesYOffset) {
+    ActivityWithButtons(int checkBoxesYOffset, boolean acceptMultiselect) {
         this.checkBoxesYOffset = checkBoxesYOffset;
+        this.acceptMultiselect = acceptMultiselect;
         reloadCheckboxes();
     }
 
@@ -85,6 +87,15 @@ public abstract class ActivityWithButtons<T> implements Activity {
             eb.click(x, y);
         for (ExtendableCheckbox<T> rect : checkboxes) {
             rect.click(x, y);
+
+            if (!acceptMultiselect)
+            if (rect.getSelected()) {
+                checkboxes
+                        .stream()
+                        .filter(anotherRect -> anotherRect != rect)
+                        .forEach(ExtendableCheckbox::unselect);
+            }
+
         }
         updateSelectedItemsNumber();
         if (cbt!=null)

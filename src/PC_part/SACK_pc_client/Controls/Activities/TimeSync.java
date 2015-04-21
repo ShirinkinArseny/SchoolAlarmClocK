@@ -27,7 +27,7 @@ public class TimeSync extends ActivityWithButtons {
     }
 
     public TimeSync() {
-        super(0);
+        super(0, false);
 
         addButton(() -> UICanvas.longOperationWaiter.processIfConnected(this::getTimeFromDuino), Labels.getTimeFromDuino);
         addButton(() -> UICanvas.longOperationWaiter.processIfConnected(this::writeLocalTimeToDuino), Labels.writeLocalTime);

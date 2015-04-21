@@ -15,7 +15,7 @@ public class ConnectManager extends ActivityWithButtons<String> {
 
     public ConnectManager() {
 
-        super(Menu.topMargin + Menu.itemHeight + 10);
+        super(Menu.topMargin + Menu.itemHeight + 10, false);
 
         setConditionedButtonPanel(new ConditionedButtonPanel(
                 new Runnable[]{DataWrapper::disconnect},

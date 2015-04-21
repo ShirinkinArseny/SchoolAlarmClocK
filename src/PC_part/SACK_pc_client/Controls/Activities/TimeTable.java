@@ -52,7 +52,7 @@ public class TimeTable extends ActivityWithButtons<Ring> {
 
     public TimeTable(int weekDay) {
 
-        super(Menu.topMargin + Menu.itemHeight * 2 + 10);
+        super(Menu.topMargin + Menu.itemHeight * 2 + 10, true);
 
         setConditionedButtonPanel(
                 new ConditionedButtonPanel(
