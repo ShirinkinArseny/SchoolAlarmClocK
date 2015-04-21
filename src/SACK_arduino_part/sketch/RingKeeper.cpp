@@ -204,9 +204,6 @@ void readNewRingsTableFromSerial() {
 */
 void printRingsTableToSerial() {
 
-
-    delete(weekRings);
-
     for (byte day=0; day<7; day++) {
         byte* dayLinks=getDayMemoryRepresentation(day);
         for (byte i=0; i<=dayLinks[0]; i++) {
@@ -216,10 +213,8 @@ void printRingsTableToSerial() {
     }
 
     byte* timeStamps=getRingsTimeStamps();
-    Serial.print((char)timeStamps[0]);
-    for (int i=1; i<=timeStamps[0]*2; i+=2) {
+    for (int i=0; i<timeStamps[0]*2+1; i++) {
         Serial.print((char)timeStamps[i]);
-        Serial.print((char)timeStamps[i+1]);
     }
     delete(timeStamps);
 
