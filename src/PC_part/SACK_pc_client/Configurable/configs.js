@@ -15,7 +15,7 @@ dragWindow=1;
 resizableWindow=0;
 
 bigFontSize=35;
-smallFontSize=20;
+smallFontSize=25;
 
 updatePortsList = "ОБНОВИТЬ СПИСОК ПОРТОВ";
 connectToSelected = "СОЕДИНИТЬСЯ С ЭТИМ";

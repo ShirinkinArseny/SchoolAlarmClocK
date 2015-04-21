@@ -4,8 +4,6 @@ import PC_part.Common.Logger;
 import PC_part.SACK_pc_client.Resources.Images;
 
 import java.awt.*;
-import java.io.FileInputStream;
-import java.io.IOException;
 
 public class Design {
 
