@@ -8,6 +8,7 @@ import PC_part.Common.Logger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 
 import static PC_part.SACK_pc_client.PlayingAroundBytes.bytesToInts;
 import static PC_part.SACK_pc_client.PlayingAroundBytes.intsToBytes;
@@ -115,6 +116,7 @@ public class DataWrapper {
                 for (int ringRef : ringsRefs[day]) {
                     ringsNew[day].add(new Ring(rings.get(ringRef) * 10));
                 }
+                ringsNew[day].sort((o1, o2) -> Integer.compare(o1.getSeconds(), o2.getSeconds()));
             }
 
             weekdays = ringsNew;
@@ -137,6 +139,7 @@ public class DataWrapper {
 
             bytes.add(weekdays[day].size());
             for (Ring ring : weekdays[day]) {
+
                 int value = ring.getSeconds() / 10;
 
                 int index = realRings.indexOf(value);

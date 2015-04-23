@@ -108,6 +108,12 @@ public abstract class Serial {
                 DataWrapper.processError(Labels.networkErrors);
                 break;
             }
+
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
         Logger.logInfo(this.getClass(), "Processed in " + cycle + " steps");
         return resp;
@@ -143,6 +149,12 @@ public abstract class Serial {
                 DataWrapper.processError(Labels.networkErrors);
                 return null;
             }
+
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
         Logger.logInfo(this.getClass(), "Processed in " + cycle + " steps");
         return resp;
@@ -150,7 +162,7 @@ public abstract class Serial {
 
     public enum Action {RequestWeekDay, RequestTime, RequestRings, SetRings, SetTime}
 
-    private static byte[] sum(char c, byte[] b) {
+    private static byte[] sum(int c, byte[] b) {
         byte[] res=new byte[b.length+1];
         res[0]= (byte) c;
         System.arraycopy(b, 0, res, 1, b.length);
@@ -203,15 +215,52 @@ public abstract class Serial {
 
             case SetRings: {
 
-                byte[] resp = tryWhile(sum('3', s), new StringChecker() {
-                    @Override
-                    boolean notMatches(byte[] s) {
-                        return s == null || !new String(s).contains("RDone!");
-                    }
-                });
 
-                Logger.logInfo(this.getClass(), "Printing table to EEPROM! Answer: " + Arrays.toString(resp));
+                int index=0;
+                byte[] resp = null;
+                for (int i=0; i<7; i++) {
+
+                    byte[] links=new byte[s[index]+1];
+                    links[0]=s[index];
+                    System.arraycopy(s, index+1, links, 1, s[index]);
+                    index+=s[index]+1;
+
+                    resp = tryWhile(sum('8', sum(i, links)), new StringChecker() {
+                        @Override
+                        boolean notMatches(byte[] s) {
+                            return s == null || !new String(s).contains("SDone!");
+                        }
+                    });
+                    Logger.logInfo(this.getClass(), "Updating links! Answer: " + new String(resp));
+
+                    if (resp==null) return null;
+                }
+
+                byte[] timestamps=new byte[s.length-index];
+                System.arraycopy(s, index+1, timestamps, 0, s.length-index-1);
+
+                for (int part=0; part*20<timestamps.length; part++) {
+
+
+                    byte[] tsPart=new byte[Math.min(20, timestamps.length-part*20)];
+                    System.arraycopy(timestamps, part*20, tsPart, 0, Math.min(20, timestamps.length-part*20));
+
+
+                    resp = tryWhile(sum('3', sum(part, sum(tsPart.length/2, tsPart))), new StringChecker() {
+                        @Override
+                        boolean notMatches(byte[] s) {
+                            return s == null || !new String(s).contains("RDone!");
+                        }
+                    });
+
+                    Logger.logInfo(this.getClass(), "Updating timestamps! Answer: " + new String(resp));
+
+                    if (resp==null) return null;
+                }
+
                 return resp;
+
+
             }
             case SetTime: {
 
@@ -262,7 +311,7 @@ public abstract class Serial {
         return null;
     }
 
-    abstract class StringChecker {
+    public abstract class StringChecker {
         abstract boolean notMatches(byte[] s);
     }
 

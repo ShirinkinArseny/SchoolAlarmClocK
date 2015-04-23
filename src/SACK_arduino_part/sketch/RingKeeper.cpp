@@ -45,7 +45,7 @@ void loadTodayRings() {
 */
 void initRingKeeper(byte ringPin) {
   Serial.begin(9600);
-  Serial.setTimeout(100);
+  Serial.setTimeout(1000);
   ringVoltagePin=ringPin;
   pinMode(ringVoltagePin, OUTPUT);
 
@@ -128,9 +128,68 @@ boolean checkForWrongRead(int value, String error, int code1, int code2) {
 String done="Done!";
 
 /*
+Читаем звонки
+*/
+bool readNewTimestamps() {
+
+
+            byte part=readValue();
+            if (checkForWrongRead(part, "E6", part, part)) return false;
+
+            int size=readValue(); //Количество звонков
+            if (checkForWrongRead(size, "E3", size, part)) return false;
+
+            writeTimeStampsCountToEEPROM(size+part*10);
+
+            for (byte ring=0; ring<size; ring++) {
+
+                int b1=readValue();
+                if (checkForWrongRead(b1, "E4", ring, part)) return false;
+
+                int b2=readValue();
+                if (checkForWrongRead(b2, "E5", ring, part)) return false;
+
+                Ring(256*b1+b2)
+                    .writeToEEPROM(ring+part*10);
+            }
+
+            loadTodayRings();
+
+            //Подтверждение успешной отправки
+            Serial.print('R');
+            Serial.print(done);
+            return true;
+}
+
+/*
+Читаем ссылки на звонки
+*/
+bool readNewLinks() {
+            byte day=readValue();
+            if (checkForWrongRead(day, "E0", day, -1)) return false;
+
+                int size=readValue(); //Количество звонков в day-ый день
+                if (checkForWrongRead(size, "E1", day, -1)) return false;
+
+                writeDayRingsNumberToEEPROM(day, size);
+
+                for (byte ring=0; ring<size; ring++) {
+
+                    int link=readValue();
+                    if (checkForWrongRead(link, "E2", day, ring)) return false;
+                    writeDayRingToEEPROM(day, ring, link);
+                }
+
+            //Подтверждение успешной отправки
+            Serial.print('S');
+            Serial.print(done);
+            return true;
+}
+
+/*
 Читаем из соединения новую таблицу звонков
 */
-void readNewRingsTableFromSerial() {
+
 /*
 
         Получаем таблицу звонков в виде
@@ -160,51 +219,6 @@ void readNewRingsTableFromSerial() {
         E4, E5 - Ошибка чтения первого и второго соответственно байтов таймстампа звонка
 
         */
-
-            /*
-                Читаем ссылки на звонки
-            */
-            for (byte day=0; day<7; day++) {
-
-                int size=readValue(); //Количество звонков в day-ый день
-                if (checkForWrongRead(size, "E1", day, -1)) return;
-
-                writeDayRingsNumberToEEPROM(day, size);
-
-                for (byte ring=0; ring<size; ring++) {
-
-                    int link=readValue();
-                    if (checkForWrongRead(link, "E2", day, ring)) return;
-                    writeDayRingToEEPROM(day, ring, link);
-                }
-            }
-
-            int size=readValue(); //Количество звонков
-            if (checkForWrongRead(size, "E3", 7, 0)) return;
-
-            writeTimeStampsCountToEEPROM(size);
-
-            /*
-                Читаем звонки
-            */
-            for (byte ring=0; ring<size; ring++) {
-
-                int b1=readValue();
-                if (checkForWrongRead(b1, "E4", ring, size)) return;
-
-                int b2=readValue();
-                if (checkForWrongRead(b2, "E5", ring, size)) return;
-
-                Ring(256*b1+b2)
-                    .writeToEEPROM(ring);
-            }
-
-            loadTodayRings();
-
-            //Подтверждение успешной отправки
-            Serial.print('R');
-            Serial.print(done);
-}
 
 /*
 Пишем текущую таблицу звонков в соединение.
@@ -305,8 +319,8 @@ void readCommandsFromSerial() {
             case '2':                       //get current time
                 Serial.println(currentTimeSec);
                 break;
-            case '3':                       //set rings table
-                readNewRingsTableFromSerial();
+            case '3':                       //set rings stamps
+                readNewTimestamps();
                 break;
             case '4':                       //get free memory
                 printFreeMemory();
@@ -319,6 +333,9 @@ void readCommandsFromSerial() {
                 break;
             case '7':                       //request today's rings
                 printTodaysRings();
+                break;
+            case '8':                       //set rings links
+                readNewLinks();
                 break;
 
         }
