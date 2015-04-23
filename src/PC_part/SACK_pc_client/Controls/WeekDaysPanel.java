@@ -106,10 +106,10 @@ public class WeekDaysPanel {
 
                 if (Design.drawShadows)
                 g2.drawImage(Images.doubleArrowShadowed,
-                        (int)selectionMotion.get2SpeedDownValue()-Design.shadowRadius,
+                        (int)selectionMotion.getSinValue()-Design.shadowRadius,
                         additionY-Design.shadowRadius, null);
 
-                g2.drawImage(Images.darkDoubleArrow, (int)selectionMotion.get2SpeedDownValue(), additionY, null);
+                g2.drawImage(Images.darkDoubleArrow, (int)selectionMotion.getSinValue(), additionY, null);
             }
 
         }

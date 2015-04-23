@@ -39,7 +39,7 @@ CXXFLAGS_STD = -std=gnu++11
 
 ### MONITOR_PORT
 ### The port your board is connected to. Using an '*' tries all the ports and finds the right one.
-MONITOR_PORT = /dev/ttyUSB0
+MONITOR_PORT = /dev/ttyUSB*
 
 ### CURRENT_DIR
 ### Do not touch - used for binaries path

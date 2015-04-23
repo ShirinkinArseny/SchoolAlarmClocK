@@ -33,10 +33,12 @@ public class ExtendableButton {
         return x>=this.x && x<=this.x2 && y>=this.y && y<=this.y2;
     }
 
-    public void click(int x, int y) {
+    public boolean click(int x, int y) {
         if (getContains(x, y)) {
             onclick.run();
+            return true;
         }
+        return false;
     }
 
     private static final int textXDrawOffset=30;

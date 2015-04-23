@@ -85,18 +85,21 @@ public abstract class ActivityWithButtons<T> implements Activity {
     public void mouseClick(int x, int y) {
         for (ExtendableButton eb: actions)
             eb.click(x, y);
+
         for (ExtendableCheckbox<T> rect : checkboxes) {
-            rect.click(x, y);
+            if (rect.click(x, y)) {
 
-            if (!acceptMultiselect)
-            if (rect.getSelected()) {
-                checkboxes
-                        .stream()
-                        .filter(anotherRect -> anotherRect != rect)
-                        .forEach(ExtendableCheckbox::unselect);
+                if (!acceptMultiselect) {
+                    checkboxes
+                            .stream()
+                            .filter(anotherRect -> anotherRect != rect && anotherRect.getSelected())
+                            .forEach(ExtendableCheckbox::unselect);
+                }
+
+                break;
             }
-
         }
+
         updateSelectedItemsNumber();
         if (cbt!=null)
             cbt.mouseClick(x, y);

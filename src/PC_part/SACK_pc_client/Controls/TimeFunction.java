@@ -37,6 +37,11 @@ public class TimeFunction {
         return (System.nanoTime()-startTime)/1000000000f;
     }
 
+    public float getSinValue() {
+        float currentTime= (float) (Math.PI/2*getTimeFromStart()/time);
+        return (float) (from+(to-from)*Math.sin(currentTime));
+    }
+
     public float get4SpeedDownValue() {
         float currentTime=getTimeFromStart()/time-1;
 

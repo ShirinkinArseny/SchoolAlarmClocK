@@ -42,7 +42,7 @@ public class ExtendableCheckbox<T> {
     private final TimeFunction in;
     private final TimeFunction out;
 
-    public void click(int x, int y) {
+    public boolean click(int x, int y) {
         if (getContains(x, y)) {
             selected = !selected;
             if (selected)
@@ -50,7 +50,9 @@ public class ExtendableCheckbox<T> {
             else {
                 out.launch();
             }
+            return true;
         }
+        return false;
     }
 
     public void draw(Graphics2D g2) {
@@ -59,15 +61,15 @@ public class ExtendableCheckbox<T> {
             if (in.isDone()) {
                 g2.fillRect(x, y, w, h);
             } else
-                g2.fillRect(x, y, (int) in.get2SpeedDownValue(), h);
+                g2.fillRect(x, y, (int) in.getSinValue(), h);
         } else {
             if (!out.isDone()) {
-                g2.fillRect(x, y, (int) out.get2SpeedUpValue(), h);
+                g2.fillRect(x, y, (int) out.getSinValue(), h);
             }
         }
         g2.setColor(Design.darkFontColor);
         g2.setFont(Design.fontSmall);
-        g2.drawString(text, x+5, y+20);
+        g2.drawString(text, x+5, y+21);
 
     }
 

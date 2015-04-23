@@ -45,6 +45,7 @@ void loadTodayRings() {
 */
 void initRingKeeper(byte ringPin) {
   Serial.begin(9600);
+  Serial.setTimeout(100);
   ringVoltagePin=ringPin;
   pinMode(ringVoltagePin, OUTPUT);
 
@@ -78,7 +79,7 @@ void printFreeMemory() {
     Serial.print("\n");
 }
 
-#define READ_BYTE_TRIES_NUMBER 10 //количество попыток считать байт
+#define READ_BYTE_TRIES_NUMBER 100 //количество попыток считать байт
 
 /*
 Читаем байт из соединения.
@@ -91,10 +92,12 @@ int readValue() {
     byte cyc=0;
 
     while (value<0 && cyc<READ_BYTE_TRIES_NUMBER) {
-            value=Serial.read();
+            delay(100);
             cyc++;
-            delay(10);
+            value=Serial.read();
     }
+
+
 
     return value;
 }
@@ -107,20 +110,22 @@ error - текст ошибки
 day - день недели, в котором произошла ошибка
 ring - номер звонка, в котором произошла ошибка
 */
-boolean checkForWrongRead(int value, char* error, int day, int ring) {
+boolean checkForWrongRead(int value, String error, int code1, int code2) {
     if (value<0) {
              Serial.print(error);
              Serial.print(':');
-             Serial.print(day);
+             Serial.print(code1);
              Serial.print(':');
-             Serial.println(ring);
+             Serial.println(code2);
              loadTodayRings();
              return true;
     }
+    Serial.print(value);
+    Serial.print(", ");
     return false;
 }
 
-char* done="Done!";
+String done="Done!";
 
 /*
 Читаем из соединения новую таблицу звонков
@@ -185,13 +190,15 @@ void readNewRingsTableFromSerial() {
             for (byte ring=0; ring<size; ring++) {
 
                 int b1=readValue();
-                if (checkForWrongRead(b1, "E4", 7, ring)) return;
+                if (checkForWrongRead(b1, "E4", ring, size)) return;
 
                 int b2=readValue();
-                if (checkForWrongRead(b2, "E5", 7, ring)) return;
+                if (checkForWrongRead(b2, "E5", ring, size)) return;
 
-                Ring(256*b1+b2).writeToEEPROM(ring);
+                Ring(256*b1+b2)
+                    .writeToEEPROM(ring);
             }
+
             loadTodayRings();
 
             //Подтверждение успешной отправки
@@ -212,11 +219,12 @@ void printRingsTableToSerial() {
         delete(dayLinks);
     }
 
-    byte* timeStamps=getRingsTimeStamps();
-    for (int i=0; i<timeStamps[0]*2+1; i++) {
-        Serial.print((char)timeStamps[i]);
+    byte number=getRingsTimeStampsNumber();
+    Serial.print((char)number);
+    for (int i=0; i<number; i++) {
+        Serial.print((char)getRingTimeStamp(i, 0));
+        Serial.print((char)getRingTimeStamp(i, 1));
     }
-    delete(timeStamps);
 
     //Подтверждение успешной отправки
     Serial.print('O');

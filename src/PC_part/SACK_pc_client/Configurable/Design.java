@@ -36,7 +36,6 @@ public class Design {
             Logger.logInfo(Design.class, "Font had been read successfully");
         } catch (Exception e) {
             Logger.logError(Design.class, "Cannot read font");
-            new Exception().printStackTrace();
             System.exit(1);
         }
 
@@ -49,7 +48,6 @@ public class Design {
             Logger.logInfo(Design.class, "Font had been read successfully");
         } catch (Exception e) {
             Logger.logError(Design.class, "Cannot read font");
-            new Exception().printStackTrace();
             System.exit(1);
         }
 

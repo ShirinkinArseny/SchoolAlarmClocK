@@ -138,10 +138,14 @@
   byte* getDayMemoryRepresentation(byte dayOfWeek);
 
   /*
-  Загружаем таймстампы звонков.
-  После использования нужно удалять!
+  Таймстамп по его номеру и смещению
   */
-  byte* getRingsTimeStamps();
+  byte getRingTimeStamp(byte index, byte bytenum);
+
+  /*
+  Количество таймстампов звонков
+  */
+  byte getRingsTimeStampsNumber();
 
   /*
   Пишем в ПЗУ стандартное расписание и стандартные звонки

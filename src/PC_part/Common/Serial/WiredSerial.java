@@ -19,9 +19,14 @@ public class WiredSerial extends Serial {
     }
 
     @Override
-    void sendByte(byte b) {
+    void sendBytes(byte[] b) {
         try {
-            serialPort.writeByte(b);
+            serialPort.purgePort(SerialPort.PURGE_RXCLEAR+SerialPort.PURGE_TXCLEAR);
+        } catch (SerialPortException e) {
+            e.printStackTrace();
+        }
+        try {
+            serialPort.writeBytes(b);
         } catch (SerialPortException e) {
             e.printStackTrace();
         }
@@ -39,7 +44,7 @@ public class WiredSerial extends Serial {
     @Override
     public byte[] readBytes() {
         try {
-            Thread.sleep(10);
+            Thread.sleep(100);
             return serialPort.readBytes();
         } catch (Exception e) {
             e.printStackTrace();

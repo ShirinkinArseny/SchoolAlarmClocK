@@ -12,10 +12,12 @@ public class Logger {
 
     public static void logWarning(Class cl, String s) {
         System.err.println("[Warning] " + getDateText() + " (" + cl.getName() + ") " + s);
+        new Exception().printStackTrace();
     }
 
     public static void logError(Class cl, String s) {
         System.err.println("[ERROR] " + getDateText() + " (" + cl.getName() + ") " + s);
+        new Exception().printStackTrace();
     }
 
     public static void logInfo(Class cl, String s) {

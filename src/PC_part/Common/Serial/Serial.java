@@ -15,7 +15,7 @@ public abstract class Serial {
     /*
     Количество попыток считать ответ на запрос
      */
-    private static final int tries = 100;
+    private static final int tries = 10;
 
     /*
             Начало передачи сообщения
@@ -30,7 +30,7 @@ public abstract class Serial {
     /*
             Отправка одного байта
      */
-    abstract void sendByte(byte b);
+    abstract void sendBytes(byte[] b);
 
     /*
             Отправка строки
@@ -41,8 +41,7 @@ public abstract class Serial {
             Отправка сообщения о завершении передачи
      */
     private void sendStop() {
-        sendByte((byte) '\n');
-        sendByte((byte) '\r');
+        sendBytes(new byte[]{'\n', '\r'});
     }
 
     /*
@@ -69,8 +68,7 @@ public abstract class Serial {
     private void request(byte[] ask) {
         try {
             initConnection();
-            for (byte anAsk : ask) sendByte(anAsk);
-            sendStop();
+            sendBytes(ask);
             closeConnection();
         } catch (Exception e) {
             e.printStackTrace();
@@ -80,7 +78,7 @@ public abstract class Serial {
     public void request(String ask) {
         try {
             initConnection();
-            sendString(ask + "\r\n");
+            sendString(ask);
             closeConnection();
         } catch (Exception e) {
             e.printStackTrace();
@@ -105,7 +103,8 @@ public abstract class Serial {
             cycle++;
             if (cycle > tries) {
                 Logger.logError(this.getClass(), "Can't process " + Arrays.toString(request) +
-                        "\n       last read: " + Arrays.toString(resp));
+                        "\n         last read: " + Arrays.toString(resp)+
+                        "\n         "+new String(resp));
                 DataWrapper.processError(Labels.networkErrors);
                 break;
             }
@@ -138,7 +137,9 @@ public abstract class Serial {
 
             cycle++;
             if (cycle > tries) {
-                Logger.logError(this.getClass(), "Can't process " + request + "\n       last read: " + Arrays.toString(resp));
+                Logger.logError(this.getClass(), "Can't process " + request +
+                        "\n         last read: " + Arrays.toString(resp)+
+                        "\n         "+new String(resp));
                 DataWrapper.processError(Labels.networkErrors);
                 return null;
             }

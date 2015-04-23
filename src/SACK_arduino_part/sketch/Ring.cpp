@@ -92,21 +92,10 @@ byte* getDayMemoryRepresentation(byte dayOfWeek) {
 }
 
 /*
-Загружаем таймстампы звонков.
-После использования нужно удалять!
+Таймстамп по его номеру и смещению
 */
-byte* getRingsTimeStamps() {
-
-  byte number=readByte(RINGS_DATABLOCK_START-1);
-  byte *bytes=(byte *) malloc(sizeof(byte) * (2*number+1));
-
-  bytes[0]=number;
-  for (int i=0; i<number*2; i+=2) {
-      bytes[i+1]=readByte(RINGS_DATABLOCK_START+i);
-      bytes[i+2]=readByte(RINGS_DATABLOCK_START+i+1);
-  }
-  return bytes;
-
+byte getRingTimeStamp(byte index, byte bytenum) {
+    return readByte(RINGS_DATABLOCK_START+index*2+bytenum);
 }
 
 /*
@@ -144,6 +133,13 @@ void writeDayRingsNumberToEEPROM(byte day, byte ringsNumber) {
 */
 void writeTimeStampsCountToEEPROM(byte tsCount) {
     writeByte(RINGS_DATABLOCK_START-1, tsCount);
+}
+
+/*
+Количество таймстампов звонков
+*/
+byte getRingsTimeStampsNumber() {
+    return readByte(RINGS_DATABLOCK_START-1);
 }
 
 /*
