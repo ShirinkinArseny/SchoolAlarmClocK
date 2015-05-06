@@ -33,7 +33,7 @@ public class Images {
             multiplyToColor(loadImage("MarkFilled.png"), Design.lightForegroundColor);
 
     public static final BufferedImage markShadow =
-            getShadowed(loadImage("MarkFilled.png"));
+            pow3(getShadowed(loadImage("MarkFilled.png")));
 
     public static final BufferedImage shadowMenu =
             getShadowed(getBlackRect(Menu.itemWidth, UICanvas.windowHeight));
@@ -72,6 +72,23 @@ public class Images {
         float[] offsets = new float[4];
         RescaleOp rop = new RescaleOp(scales, offsets, null);
         return rop.filter(img, img);
+    }
+
+    private static BufferedImage pow3(BufferedImage a) {
+        return summate(a, summate(a, a));
+    }
+
+    private static BufferedImage summate(BufferedImage a, BufferedImage b) {
+        BufferedImage c=new BufferedImage(
+                Math.max(a.getWidth(), b.getWidth()),
+                Math.max(a.getHeight(), b.getHeight()),
+                BufferedImage.TYPE_INT_ARGB
+        );
+        Graphics g2=c.getGraphics();
+        g2.drawImage(a, 0, 0, null);
+        g2.drawImage(b, 0, 0, null);
+        g2.dispose();
+        return c;
     }
 
     private static BufferedImage getShadowed(BufferedImage img) {

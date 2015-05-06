@@ -7,7 +7,6 @@
 void setup() {
   setTime(0, 0, 0, 9, 1, 2015);
   initRingKeeper(11);
-  Wire.begin();
 }
 
 void loop() {

@@ -2,9 +2,9 @@ package PC_part.SACK_pc_client.Dialogs;
 
 import PC_part.SACK_pc_client.Configurable.Labels;
 import PC_part.SACK_pc_client.Controls.UICanvas;
+import PC_part.SACK_pc_client.Ring;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.*;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -15,7 +15,8 @@ public class AddRingDialogue extends JDialog {
     private JButton buttonCancel;
     private JLabel resultLabel;
     private JTextField input;
-    private final Consumer<Integer> onTimeSet;
+    private JCheckBox isShort;
+    private final Consumer<Ring> onRingSet;
 
     private void updateTime() {
 
@@ -72,8 +73,8 @@ public class AddRingDialogue extends JDialog {
 
     }
 
-    public AddRingDialogue(Consumer<Integer> onTimeSet) {
-        this.onTimeSet = onTimeSet;
+    public AddRingDialogue(Consumer<Ring> onTimeSet) {
+        this.onRingSet = onTimeSet;
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
@@ -120,7 +121,8 @@ public class AddRingDialogue extends JDialog {
         int h=Integer.valueOf(times[0].trim());
         int m=Integer.valueOf(times[1].trim());
         int s=times.length>2?Integer.valueOf(times[2].trim()):0;
-        onTimeSet.accept(h*3600+m*60+s);
+
+        onRingSet.accept(new Ring(h * 3600 + m * 60 + s, isShort.isSelected()));
         dispose();
     }
 

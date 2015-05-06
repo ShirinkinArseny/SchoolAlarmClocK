@@ -38,13 +38,6 @@ public abstract class Serial {
     abstract void sendString(String s);
 
     /*
-            Отправка сообщения о завершении передачи
-     */
-    private void sendStop() {
-        sendBytes(new byte[]{'\n', '\r'});
-    }
-
-    /*
             Чтение массива байт
      */
     abstract byte[] readBytes();
@@ -175,31 +168,16 @@ public abstract class Serial {
 
         switch (act) {
             case RequestWeekDay: {
-                return tryWhile("5", new StringChecker() {
-                    @Override
-                    boolean notMatches(byte[] s) {
-                        return s == null || !new String(s).matches("\\d+\\r\\n");
-                    }
-                });
+                return tryWhile("5", s1 -> s1 == null || !new String(s1).matches("\\d+\\r\\n"));
             }
 
             case RequestTime: {
-                return tryWhile("2", new StringChecker() {
-                    @Override
-                    boolean notMatches(byte[] s) {
-                        return s == null || !new String(s).matches("\\d+\\r\\n");
-                    }
-                });
+                return tryWhile("2", s1 -> s1 == null || !new String(s1).matches("\\d+\\r\\n"));
             }
 
             case RequestRings: {
 
-                byte[] rings = tryWhile("1", new StringChecker() {
-                    @Override
-                    boolean notMatches(byte[] s) {
-                        return s == null || !new String(s).contains("ODone!");
-                    }
-                });
+                byte[] rings = tryWhile("1", s1 -> s1 == null || !new String(s1).contains("ODone!"));
 
                 if (rings != null)
                     Logger.logInfo(this.getClass(), "Gotta rings: " + Arrays.toString(rings));
@@ -225,15 +203,9 @@ public abstract class Serial {
                     System.arraycopy(s, index+1, links, 1, s[index]);
                     index+=s[index]+1;
 
-                    resp = tryWhile(sum('8', sum(i, links)), new StringChecker() {
-                        @Override
-                        boolean notMatches(byte[] s) {
-                            return s == null || !new String(s).contains("SDone!");
-                        }
-                    });
+                    resp = tryWhile(sum('8', sum(i, links)), s1 -> s1 == null || !new String(s1).contains("SDone!"));
                     Logger.logInfo(this.getClass(), "Updating links! Answer: " + new String(resp));
 
-                    if (resp==null) return null;
                 }
 
                 byte[] timestamps=new byte[s.length-index];
@@ -246,16 +218,10 @@ public abstract class Serial {
                     System.arraycopy(timestamps, part*20, tsPart, 0, Math.min(20, timestamps.length-part*20));
 
 
-                    resp = tryWhile(sum('3', sum(part, sum(tsPart.length/2, tsPart))), new StringChecker() {
-                        @Override
-                        boolean notMatches(byte[] s) {
-                            return s == null || !new String(s).contains("RDone!");
-                        }
-                    });
+                    resp = tryWhile(sum('3', sum(part, sum(tsPart.length/2, tsPart))), s1 -> s1 == null || !new String(s1).contains("RDone!"));
 
                     Logger.logInfo(this.getClass(), "Updating timestamps! Answer: " + new String(resp));
 
-                    if (resp==null) return null;
                 }
 
                 return resp;
@@ -294,13 +260,10 @@ public abstract class Serial {
                         bytes.add(year % 256);
 
 
-                        return tryWhile(intsToBytes(bytes), new StringChecker() {
-                            @Override
-                            boolean notMatches(byte[] s) {
-                                Logger.logInfo(this.getClass(), "new String(s) : "+new String(s));
-                                return s == null || !new String(s).contains("TDone!");
-                            }
-                        });
+                        return tryWhile(intsToBytes(bytes), s2 ->  {
+                                Logger.logInfo(this.getClass(), "new String(s) : "+new String(s2));
+                                return !new String(s2).contains("TDone!");
+                            });
                     }
                     Logger.logError(this.getClass(), "Wrong time string: " + Arrays.toString(splitted) + " - values are not in bounds");
                 }
@@ -311,8 +274,8 @@ public abstract class Serial {
         return null;
     }
 
-    public abstract class StringChecker {
-        abstract boolean notMatches(byte[] s);
+    public interface StringChecker {
+        boolean notMatches(byte[] s);
     }
 
     public abstract boolean getIsConnected();

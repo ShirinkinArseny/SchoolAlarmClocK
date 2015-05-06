@@ -44,8 +44,7 @@ public class TimeTable extends ActivityWithButtons<Ring> {
         reloadCheckboxes();
     }
 
-    private void addNewRing(int time) {
-        Ring r = new Ring(time);
+    private void addNewRing(Ring r) {
         DataWrapper.addRing(weekday, r);
         reloadCheckboxes();
     }

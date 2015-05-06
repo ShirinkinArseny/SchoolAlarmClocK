@@ -2,16 +2,28 @@ package PC_part.SACK_pc_client;
 
 public class Ring {
 
-    private int time;
+    private int arduinoMemoryRepresentation;
 
-    public Ring(int value) {
-        this.time=value;
-        this.time/=10;
-        this.time*=10;
+    public Ring(int memRep) {
+        arduinoMemoryRepresentation =memRep;
+    }
+
+    public Ring(int time, boolean isShort) {
+        arduinoMemoryRepresentation =time/10;
+        if (isShort)
+            arduinoMemoryRepresentation+=0b1000000000000000;
+    }
+
+    public int getArduinoMemoryRepresentation() {
+        return arduinoMemoryRepresentation;
+    }
+
+    public boolean isShort() {
+        return (arduinoMemoryRepresentation & 0b1000000000000000) !=0;
     }
 
     public int getSeconds() {
-        return time;
+        return (arduinoMemoryRepresentation & 0b0011111111111111)*10;
     }
 
     public Ring(String time) throws IllegalTimeFormatException {
@@ -21,40 +33,37 @@ public class Ring {
         }
 
         try {
-            this.time=3600*Integer.parseInt(parts[0]);
+            this.arduinoMemoryRepresentation =360*Integer.parseInt(parts[0]);
         } catch (NumberFormatException e) {
             throw new IllegalTimeFormatException("Can't parse first arg: "+parts[0]);
         }
 
 
         try {
-            this.time+=60*Integer.parseInt(parts[1]);
+            this.arduinoMemoryRepresentation +=6*Integer.parseInt(parts[1]);
         } catch (NumberFormatException e) {
             throw new IllegalTimeFormatException("Can't parse second arg: "+parts[1]);
         }
 
 
         try {
-            this.time+=Integer.parseInt(parts[2]);
+            this.arduinoMemoryRepresentation +=Integer.parseInt(parts[2])/10;
         } catch (NumberFormatException e) {
             throw new IllegalTimeFormatException("Can't parse third arg: "+parts[2]);
         }
-
-        this.time/=10;
-        this.time*=10;
     }
 
     public float getHours() {
-        return time/3600f;
+        return getSeconds() /3600f;
     }
 
     private String getHumanTime() {
-        return getHumanTime(time);
+        return getHumanTime(getSeconds());
     }
 
     public static String getHumanTime(int time) {
 
-        if (time<0) return "-"+getHumanTime(-time);
+
 
         String h= String.valueOf(time/3600);
         String m=String.valueOf(time/60%60);
@@ -65,7 +74,7 @@ public class Ring {
     }
 
     public String toString() {
-        return getHumanTime();
+        return getHumanTime()+(isShort()?" sub":"");
     }
 
 }

@@ -13,14 +13,19 @@ long getCurrentTime() {
     return 3600L*hour()+60L*minute()+second();
 }
 
-#define DELAY_TIME_COEF 2   //длительность стандартного звонка в секундах
-#define TIME_SYNC_INTERVAL 60  //время в секундах между проверкой времени
+//#define EXTERNAL_HARDWARE_CLOCK
+
+#define DELAY_TIME_COEF 3000   //длительность стандартного звонка в миллисекундах
+#define SHORT_DELAY_TIME_COEF 500   //длительность короткого звонка в миллисекундах
+#define TIME_SYNC_INTERVAL 60  //время в секундах между проверками точности времени
 
 Ring* weekRings; //все звонки сегодня
 
 byte currentWeekDay=0; //текущий день недели
 
 byte ringVoltagePin; //пин, на который подаётся напряжение при звонке
+
+boolean currentRingIsShort=false;
 
 //получаем текущий день недели начиная с нуля (пн)
 byte getWeekDay() {
@@ -44,7 +49,7 @@ void loadTodayRings() {
 Инициализируем хранитель звонков. ringPin - пин, на который будет подаваться напряжение при звонке
 */
 void initRingKeeper(byte ringPin) {
-  Serial.begin(9600);
+  Serial.begin(115200);
   Serial.setTimeout(1000);
   ringVoltagePin=ringPin;
   pinMode(ringVoltagePin, OUTPUT);
@@ -52,8 +57,12 @@ void initRingKeeper(byte ringPin) {
   //initConnection(13, 12);
   //writeDefaultRings();
 
+
+  #ifdef EXTERNAL_HARDWARE_CLOCK
+  Wire.begin();
   setSyncProvider(RTC.get);
   setSyncInterval(TIME_SYNC_INTERVAL);
+  #endif
 
   currentWeekDay=getWeekDay();
   weekRings=getDayRings(currentWeekDay);
@@ -270,7 +279,10 @@ void readNewTimeFromSerial() {
     day,
     month,
     year1*256+year2);
+
+    #ifdef EXTERNAL_HARDWARE_CLOCK
     RTC.set(now());
+    #endif
 
     //Подтверждение успешной отправки
     Serial.print('T');
@@ -343,27 +355,37 @@ void readCommandsFromSerial() {
 }
 
 
-long ringStartTime=-1;//Время начала подачи напряжения на звонок в секундах от начала дня.
-                      //Если -1, значит сейчас ничто не звонит
+unsigned long ringStartTime=-1;//Время начала подачи напряжения на звонок
+boolean nowIsRinging=false;//Происходит ли звонок сейчас
 
 /*
 Подаём звонок
 */
 void makeRing() {
   digitalWrite(ringVoltagePin, HIGH);
-  ringStartTime=currentTimeSec;
+  ringStartTime=millis();
+  nowIsRinging=true;
+}
+
+/*
+Останавливаем звонок
+*/
+void stopRing() {
+    digitalWrite(ringVoltagePin, LOW);
+    nowIsRinging=false;
 }
 
 /*
 В случае завершения звонка передаём подавать напряжение на звонок
 */
 void updateRing() {
-    if (ringStartTime!=-1) {
-        if (currentTimeSec-ringStartTime>DELAY_TIME_COEF) {
-            digitalWrite(ringVoltagePin, LOW);
-            ringStartTime=-1;
+        if (
+            (currentRingIsShort && millis()-ringStartTime>SHORT_DELAY_TIME_COEF)
+                ||
+            (millis()-ringStartTime>DELAY_TIME_COEF)
+        ) {
+            stopRing();
         }
-    }
 }
 
 /*
@@ -371,7 +393,9 @@ void updateRing() {
 */
 void updateRingKeeper() {
 
-    updateRing();
+    if (nowIsRinging) {
+        updateRing();
+    }
 
     readCommandsFromSerial();
 
@@ -392,6 +416,7 @@ void updateRingKeeper() {
       //Определяем, необходимо ли начинать звонить
       long ringTime=weekRings[i].getSecondFromDayStart();
       if (currentTimeSec>=ringTime && lastTimeSec<ringTime) {
+        currentRingIsShort=weekRings[i].isShort();
 	    makeRing();
 	    break;
       }

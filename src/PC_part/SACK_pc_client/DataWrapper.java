@@ -114,7 +114,7 @@ public class DataWrapper {
             for (int day = 0; day < 7; day++) {
                 ringsNew[day] = new ArrayList<>(ringsRefs[day].size());
                 for (int ringRef : ringsRefs[day]) {
-                    ringsNew[day].add(new Ring(rings.get(ringRef) * 10));
+                    ringsNew[day].add(new Ring(rings.get(ringRef)));
                 }
                 ringsNew[day].sort((o1, o2) -> Integer.compare(o1.getSeconds(), o2.getSeconds()));
             }
@@ -140,7 +140,7 @@ public class DataWrapper {
             bytes.add(weekdays[day].size());
             for (Ring ring : weekdays[day]) {
 
-                int value = ring.getSeconds() / 10;
+                int value = ring.getArduinoMemoryRepresentation();
 
                 int index = realRings.indexOf(value);
                 if (index == -1) {

@@ -3,8 +3,12 @@
 #include "Ring.h"
 
 #define RINGS_PER_DAY 71 //Максимально допустимое число звонков в день
-#define EMPTY_RING 0b1111111111111111 //Маркер пустого звонка
 #define RINGS_DATABLOCK_START 511 //Сдвиг блока таймстампов от начала EEPROMа
+
+#define SHORT_RING_MASK 0b1000000000000000 //Маска длительности звонка
+#define TIMESTAMP_RING_MASK 0b0011111111111111 //Маска времени звонка
+#define EMPTY_RING_MASK 0b0100000000000000 //Маска пустого звонка
+
 
 //#define USE_EXTERNAL_EEPROM
 #ifdef USE_EXTERNAL_EEPROM
@@ -49,7 +53,7 @@ uint16_t Ring::getMemoryRepresentation() {
 }
 
 long Ring::getSecondFromDayStart() {
-  return Ring::memoryRepresentation*10L;
+  return (Ring::memoryRepresentation & TIMESTAMP_RING_MASK)*10L;
 }
 
 /*
@@ -66,7 +70,7 @@ Ring* getDayRings(byte dayOfWeek) {
   for (byte i=0; i<ringsNumber; i++) {
     rings[i]=loadByAddress(readByte(index+i+1));
   }
-  rings[ringsNumber]=Ring(EMPTY_RING);
+  rings[ringsNumber]=Ring(EMPTY_RING_MASK);
 
   return rings;
 }
@@ -102,7 +106,14 @@ byte getRingTimeStamp(byte index, byte bytenum) {
 Узнаём, действительно ли звонок существует (или это просто маркер конца массива)
 */
 boolean Ring::isEmpty() {
-  return Ring::memoryRepresentation==EMPTY_RING;
+  return (Ring::memoryRepresentation & EMPTY_RING_MASK) != 0;
+}
+
+/*
+Узнаём, короткий ли звонок
+*/
+boolean Ring::isShort() {
+  return (Ring::memoryRepresentation & SHORT_RING_MASK) != 0;
 }
 
 /*

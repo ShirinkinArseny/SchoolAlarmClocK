@@ -38,8 +38,11 @@ public class TimeFunction {
     }
 
     public float getSinValue() {
-        float currentTime= (float) (Math.PI/2*getTimeFromStart()/time);
-        return (float) (from+(to-from)*Math.sin(currentTime));
+        float currentTime= (float) ((getTimeFromStart()/time-0.5)*Math.PI);
+        currentTime= (float) Math.sin(currentTime);
+        currentTime+=1;
+        currentTime/=2;
+        return from+(to-from)* currentTime;
     }
 
     public float get4SpeedDownValue() {

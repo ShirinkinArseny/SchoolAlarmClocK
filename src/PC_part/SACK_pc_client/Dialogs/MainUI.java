@@ -13,6 +13,21 @@ public class MainUI extends JFrame {
     private JPanel contentPane;
 
     public MainUI() {
+
+        try {
+            UIManager.setLookAndFeel(com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel.class.getCanonicalName());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (UnsupportedLookAndFeelException e) {
+            e.printStackTrace();
+        }
+
+
+
         setContentPane(contentPane);
 
         setUndecorated(!Design.windowBoarders);
