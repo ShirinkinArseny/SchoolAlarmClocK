@@ -13,11 +13,12 @@ long getCurrentTime() {
     return 3600L*hour()+60L*minute()+second();
 }
 
-//#define EXTERNAL_HARDWARE_CLOCK
+#define MAX_ACCEPTABLE_ERROR 1000   //максимально допустимая погрешность измерения времени в секнудах
+                                    //любое число, которое больше реальной погрешности и меньше длины суток
 
-#define DELAY_TIME_COEF 3000   //длительность стандартного звонка в миллисекундах
+#define DELAY_TIME_COEF 5000   //длительность стандартного звонка в миллисекундах
 #define SHORT_DELAY_TIME_COEF 500   //длительность короткого звонка в миллисекундах
-#define TIME_SYNC_INTERVAL 60  //время в секундах между проверками точности времени
+#define TIME_SYNC_INTERVAL 10  //время в секундах между проверками точности времени
 
 Ring* weekRings; //все звонки сегодня
 
@@ -34,8 +35,8 @@ byte getWeekDay() {
   return wDay;
 }
 
-long lastTimeSec=0;     //прошлое время от начала дня в секундах
-long currentTimeSec=0;  //текущее время от начала дня в секундах
+long lastTimeSec;     //прошлое время от начала дня в секундах
+long currentTimeSec;  //текущее время от начала дня в секундах
 
 /*
 Загружаем сегодняшние звонки в память и удаляем старые
@@ -53,21 +54,16 @@ void initRingKeeper(byte ringPin) {
   Serial.setTimeout(1000);
   ringVoltagePin=ringPin;
   pinMode(ringVoltagePin, OUTPUT);
+  digitalWrite(ringVoltagePin, LOW); //На всякий случай
 
   //initConnection(13, 12);
   //writeDefaultRings();
 
-
-  #ifdef EXTERNAL_HARDWARE_CLOCK
-  Wire.begin();
-  setSyncProvider(RTC.get);
-  setSyncInterval(TIME_SYNC_INTERVAL);
-  #endif
-
   currentWeekDay=getWeekDay();
   weekRings=getDayRings(currentWeekDay);
 
-  lastTimeSec=getCurrentTime();
+  currentTimeSec=getCurrentTime();
+  lastTimeSec=currentTimeSec;
 }
 
 /*
@@ -388,28 +384,44 @@ void updateRing() {
         }
 }
 
+long getMax(long a, long b) {
+    return a>b?a:b;
+}
+
 /*
 Обновление хранителя звонков
 */
 void updateRingKeeper() {
+
+
+    #ifdef EXTERNAL_HARDWARE_CLOCK
+    setTime(RTC.get());
+    #endif
+
+    lastTimeSec=lastTimeSec;;
+    currentTimeSec=getCurrentTime();
+
+    //полночь, переход между днями
+    if (currentWeekDay!=getWeekDay()) {
+        lastTimeSec=0;
+        currentWeekDay=getWeekDay();
+        loadTodayRings();
+        return;
+    }
+
+    //тот самый момент, когда в следующий момент времени количество секунд с начала дня меньше, чем сейчас
+    //Welcome to past!
+    if (currentTimeSec<lastTimeSec) {
+         //сглаживание неравномерности времени
+         currentTimeSec=lastTimeSec;
+    }
+
 
     if (nowIsRinging) {
         updateRing();
     }
 
     readCommandsFromSerial();
-
-    lastTimeSec=currentTimeSec;
-    currentTimeSec=getCurrentTime();
-    
-    if (currentTimeSec<lastTimeSec) {
-          //полночь, переход между днями
-        lastTimeSec=0;
-        currentWeekDay=getWeekDay();
-        loadTodayRings();
-      return;
-    }
-
 
     byte i=0;
     while (!weekRings[i].isEmpty()) {
@@ -422,4 +434,6 @@ void updateRingKeeper() {
       }
       i++;
     }
+
+    delay(100);
 }
