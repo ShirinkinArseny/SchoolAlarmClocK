@@ -13,12 +13,11 @@ long getCurrentTime() {
     return 3600L*hour()+60L*minute()+second();
 }
 
-#define MAX_ACCEPTABLE_ERROR 1000   //максимально допустимая погрешность измерения времени в секнудах
-                                    //любое число, которое больше реальной погрешности и меньше длины суток
-
-#define DELAY_TIME_COEF 5000   //длительность стандартного звонка в миллисекундах
-#define SHORT_DELAY_TIME_COEF 500   //длительность короткого звонка в миллисекундах
+#define DELAY_TIME_COEF 5500   //длительность стандартного звонка в миллисекундах
+#define SHORT_DELAY_TIME_COEF 300   //длительность короткого звонка в миллисекундах
 #define TIME_SYNC_INTERVAL 10  //время в секундах между проверками точности времени
+
+#define EXTERNAL_HARDWARE_CLOCK
 
 Ring* weekRings; //все звонки сегодня
 
@@ -58,6 +57,10 @@ void initRingKeeper(byte ringPin) {
 
   //initConnection(13, 12);
   //writeDefaultRings();
+
+   #ifdef EXTERNAL_HARDWARE_CLOCK
+   Wire.begin();
+   #endif
 
   currentWeekDay=getWeekDay();
   weekRings=getDayRings(currentWeekDay);
@@ -398,7 +401,7 @@ void updateRingKeeper() {
     setTime(RTC.get());
     #endif
 
-    lastTimeSec=lastTimeSec;;
+    lastTimeSec=currentTimeSec;
     currentTimeSec=getCurrentTime();
 
     //полночь, переход между днями
